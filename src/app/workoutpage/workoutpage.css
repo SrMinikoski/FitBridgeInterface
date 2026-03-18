@@ -1,0 +1,113 @@
+* {
+    font-family: Arial, Helvetica, sans-serif;
+    list-style: none;
+    box-sizing: border-box;
+    text-decoration: none;
+}
+
+.content {
+    background-color: #E8D2B3;
+    width: 50%;
+    padding: 15px;
+    border-radius: 20px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    margin: 10px auto;
+    text-align: center;
+}
+
+.card {
+    width: 90%;
+    height: 80px;
+    overflow: hidden;
+    display: flex;
+    margin: 10px;
+    flex-direction: row;
+    border-radius: 20px;
+    align-items: center;
+    justify-content: space-around;
+}
+
+.card * {
+    margin: 8px;
+}
+
+.exercise {
+    width: 80px;
+    height: 80px;
+    display: flex;
+    border-radius: 20px;
+    padding: 5px;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.card h2 {
+    font-size: 12px;
+}
+
+.card p {
+    margin-left: -5px;
+}
+
+input {
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    width: 20px;
+    height: 20px;
+    border: 2px solid #8F3A33;
+    border-radius: 50%;
+    background-color: #FFCFCD;
+    cursor: pointer;
+    display: inline-block;
+    position: relative;
+}
+input:checked {
+  background-color: #E0332B;
+}
+
+.reps,
+.sets,
+.rest {
+    width: 20px;
+    height: 20px;
+    background-color: #E0332B;
+    padding: 8px;
+    box-sizing: content-box;
+    border-radius: 50%;
+}
+.card {
+    position: relative; 
+    transition: opacity 200ms ease-in-out, filter 200ms ease-in-out;
+}
+.card:has(input[type="checkbox"]:checked) {
+    opacity: 0.5;
+    filter: grayscale(20%);
+}
+.card:has(input[type="checkbox"]:checked)::after {
+    content: "";
+    position: absolute;
+    left: 4%;
+    right: 4%;
+    top: 50%;
+    height: 3px;
+    background: rgba(0,0,0,0.6);
+    transform: translateY(-50%); 
+    pointer-events: none; 
+    border-radius: 2px;
+}
+.card input[type="checkbox"] {
+    position: relative;
+    z-index: 2;
+}
+.card input[type="checkbox"]:hover{
+    transition: .2s;
+    transform: scale(1.1);
+}
+.ExerciseDone:checked {
+    background-color: #E0332B;
+}
