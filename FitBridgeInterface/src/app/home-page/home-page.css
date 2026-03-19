@@ -36,43 +36,6 @@
     border: solid 2px #8F3A33;
 }
 
-.navegation {
-    background-color: #E0332B;
-    width: 220px;
-    height: 55px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    margin: 20px auto;
-    border-radius: 20px;
-}
-
-.navegation ul {
-    list-style: none;
-    margin: 0px;
-    padding: 0px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    margin: 10px;
-}
-
-.navegation ul li {
-    width: 35px;
-    height: 35px;
-    padding: 5px;
-    margin: 20px;
-    text-align: center;
-    background-color: #FFCFCD;
-    border-radius: 100%;
-    line-height: 0px;
-}
-
-.navegation ul li:hover {
-    transition: .2s;
-    transform: scale(1.2);
-    background-color: white;
-}
 
 .content {
     width: 600px;

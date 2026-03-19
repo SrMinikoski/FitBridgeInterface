@@ -1,8 +1,9 @@
 import { Component } from '@angular/core';
+import { Navigation } from '../navigation/navigation';
 
 @Component({
   selector: 'app-workoutpage',
-  imports: [],
+  imports: [Navigation],
   templateUrl: './workoutpage.html',
   styleUrl: './workoutpage.css',
 })
