@@ -20,17 +20,30 @@
 
 .card {
     width: 90%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    transition: all 300ms ease-in-out;
+    margin: 10px 0px;
+    border-radius: 20px;
+}
+
+.information {
+    width: 100%;
     height: 80px;
     overflow: hidden;
     display: flex;
     margin: 10px;
     flex-direction: row;
-    border-radius: 20px;
+    border-radius: 50px;
+    position: relative;
     align-items: center;
     justify-content: space-around;
+    cursor: pointer;
+    transition: background-color 200ms ease-in-out;
 }
 
-.card * {
+.information * {
     margin: 8px;
 }
 
@@ -45,15 +58,52 @@
     align-items: center;
 }
 
-.card h2 {
+.exercise-toggle {
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    width: 80px;
+    height: 80px;
+    border: none;
+    border-radius: 20px;
+    padding: 0;
+    background-image: none;
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-color: transparent;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: transform 200ms ease-in-out, filter 200ms ease-in-out;
+}
+
+.exercise-toggle:hover {
+    filter: brightness(1.2);
+    transform: rotateZ(-10deg);
+    position: relative;
+    z-index: 10;
+}
+
+.exercise-toggle:checked {
+    transform: rotateZ(-10deg);
+}
+
+.exercise-toggle:checked:hover {
+    filter: brightness(1.2);
+
+}
+
+.information h2 {
     font-size: 12px;
 }
 
-.card p {
+.information p {
     margin-left: -5px;
 }
 
-input {
+input:not(.exercise-toggle) {
     appearance: none;
     -webkit-appearance: none;
     -moz-appearance: none;
@@ -66,8 +116,9 @@ input {
     display: inline-block;
     position: relative;
 }
-input:checked {
-  background-color: #E0332B;
+
+input:not(.exercise-toggle):checked {
+    background-color: #E0332B;
 }
 
 .reps,
@@ -80,34 +131,146 @@ input:checked {
     box-sizing: content-box;
     border-radius: 50%;
 }
-.card {
-    position: relative; 
+
+.information {
+    position: relative;
     transition: opacity 200ms ease-in-out, filter 200ms ease-in-out;
 }
-.card:has(input[type="checkbox"]:checked) {
+
+.information:has(.ExerciseDone:checked) {
     opacity: 0.5;
     filter: grayscale(20%);
 }
-.card:has(input[type="checkbox"]:checked)::after {
+
+.information:has(.ExerciseDone:checked)::after {
     content: "";
     position: absolute;
     left: 4%;
     right: 4%;
     top: 50%;
     height: 3px;
-    background: rgba(0,0,0,0.6);
-    transform: translateY(-50%); 
-    pointer-events: none; 
+    background: rgba(0, 0, 0, 0.6);
+    transform: translateY(-50%);
+    pointer-events: none;
     border-radius: 2px;
 }
-.card input[type="checkbox"] {
+
+.information .ExerciseDone {
     position: relative;
     z-index: 2;
 }
-.card input[type="checkbox"]:hover{
+
+.ExerciseDone:hover {
     transition: .2s;
     transform: scale(1.1);
 }
+
 .ExerciseDone:checked {
     background-color: #E0332B;
+}
+
+.description {
+    width: 100%;
+    margin: 0;
+    padding: 0;
+    background-color: #ffffff00;
+    border-radius: 5px;
+    display: block;
+    max-height: 0;
+    overflow: hidden;
+    opacity: 0;
+    transition: max-height 400ms ease-in-out, opacity 400ms ease-in-out, padding 400ms ease-in-out, margin 400ms ease-in-out;
+}
+
+.description.visible {
+    max-height: 300px;
+    opacity: 1;
+    padding: 15px 10px;
+    margin: 0 10px 10px 10px;
+}
+
+/* Print styles: preserve colors and ensure expanded descriptions print */
+@media print {
+    * { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    .description { max-height: none !important; opacity: 1 !important; padding: 15px 10px !important; margin: 0 10px 10px 10px !important; }
+    .exercise-toggle { box-shadow: none; }
+}
+
+.description h3 {
+    color: black;
+    font-size: 18px;
+    font-weight: bolder;
+}
+
+.description span {
+    color: black;
+    font-size: 14px;
+}
+
+#explicacao {
+    font-size: 12px;
+    color: #0000009a;
+    margin: 0px 0px 10px 0px;
+}
+
+h1 {
+    color: #E0332B;
+    font-weight: bolder;
+    font-size: 30px;
+    margin-top: 20px;
+}
+
+
+.descricaocompleta h3 {
+    color: #8F3A33;
+    font-weight: bold;
+    font-size: 25px;
+    margin: 0 0 15px 0;
+}
+
+.descricaocompleta p {
+    color: #000000;
+    font-size: 14px;
+}
+
+.descricaocompleta {
+    background-color: #F9EFE1;
+    width: 90%;
+    border-radius: 20px;
+    padding: 20px;
+    margin-top: 20px;
+}
+
+.dadostreino {
+    background-color: #F9EFE1;
+    width: 90%;
+    border-radius: 20px;
+    padding: 20px;
+    margin-top: 20px;
+    font-size: 14px;
+    text-align: left;
+}
+.dadostreino p{
+    margin: 5px;
+    background-color: #ffffff;
+    padding: 5px;
+    border-radius: 10px;
+}
+.dadostreino p:nth-child(even){
+    background-color: #ffffff00;
+}
+
+#pdf{
+    color: black;
+    border-radius: 50px;
+    background-color: #E0332B;
+    margin-top: 15px;
+    border: none;
+    padding: 10px 20px;
+    cursor: pointer;
+}
+#pdf:hover{
+    transition: .2s;
+    transform: scale(1.05);
+    filter: contrast(1.3);
 }
