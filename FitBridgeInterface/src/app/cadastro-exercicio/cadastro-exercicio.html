@@ -1,0 +1,69 @@
+<div class="content">
+    <h1>Cadastro de Exercício</h1>
+    <p class="subtitle">Adicione um novo exercício ao sistema</p>
+
+    <!-- Mensagem de Sucesso/Erro -->
+    <div *ngIf="mensagem.visivel" [ngClass]="['mensagem', mensagem.tipo]">
+        <div class="mensagem-conteudo">
+            <span *ngIf="mensagem.tipo === 'sucesso'" class="icone-sucesso">✓</span>
+            <span *ngIf="mensagem.tipo === 'erro'" class="icone-erro">✕</span>
+            <p>{{ mensagem.texto }}</p>
+        </div>
+    </div>
+
+    <form class="registration-form" #exerciseForm="ngForm" (ngSubmit)="onSubmit(exerciseForm)">
+        <!-- Seção de Informações Básicas -->
+        <fieldset class="form-section">
+            <legend>Informações do Exercício</legend>
+
+            <div class="form-group">
+                <label for="exerciseName">Nome do Exercício:</label>
+                <input type="text" id="exerciseName" name="exerciseName" placeholder="Ex: Supino Reto" required>
+            </div>
+
+            <div class="form-group">
+                <label for="description">Descrição/Como executar:</label>
+                <textarea id="description" name="description" placeholder="Descreva como executar o exercício corretamente" required rows="5"></textarea>
+            </div>
+
+            <div class="form-group">
+                <label for="mainMuscle">Músculo principal ativado:</label>
+                <input type="text" id="mainMuscle" name="mainMuscle" placeholder="Ex: Peitoral" required>
+            </div>
+
+            <div class="form-group">
+                <label for="auxiliaryMuscles">Músculos auxiliares:</label>
+                <input type="text" id="auxiliaryMuscles" name="auxiliaryMuscles" placeholder="Ex: Tríceps, Deltóide anterior" required>
+            </div>
+        </fieldset>
+
+        <!-- Seção de Imagem -->
+        <fieldset class="form-section">
+            <legend>Imagem do Exercício</legend>
+
+            <div class="form-group">
+                <label for="exerciseImage">Selecionar imagem:</label>
+                <div class="file-input-wrapper">
+                    <input type="file" id="exerciseImage" name="exerciseImage" accept="image/*" (change)="onImageSelect($event)" required>
+                    <span class="file-label">Escolher arquivo</span>
+                </div>
+                <p class="file-name" *ngIf="nomeImagem">{{ nomeImagem }}</p>
+                <p class="file-info">Formatos aceitos: JPG, PNG, AVIF</p>
+            </div>
+
+            <div class="image-preview" id="imagePreview">
+                <img *ngIf="imagemPreview" [src]="imagemPreview" alt="Preview do exercício">
+                <p class="preview-text" *ngIf="!imagemPreview">Imagem será exibida aqui</p>
+            </div>
+        </fieldset>
+
+        <button type="submit" class="btn-submit">Cadastrar Exercício</button>
+    </form>
+
+    <a routerLink="/home" class="btn-home" title="Voltar à página inicial">
+        <svg xmlns="http://www.w3.org/2000/svg" height="20px" viewBox="0 -960 960 960" width="20px" fill="#FFFFFF">
+            <path
+                d="M264-216h96v-240h240v240h96v-348L480-726 264-564v348Zm-72 72v-456l288-216 288 216v456H528v-240h-96v240H192Zm288-327Z" />
+        </svg>
+    </a>
+</div>

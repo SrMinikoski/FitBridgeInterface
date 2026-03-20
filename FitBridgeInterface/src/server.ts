@@ -5,24 +5,55 @@ import {
   writeResponseToNodeResponse,
 } from '@angular/ssr/node';
 import express from 'express';
-import { join } from 'node:path';
+import { join, resolve } from 'node:path';
+import { existsSync, mkdirSync } from 'node:fs';
+import multer from 'multer';
 
 const browserDistFolder = join(import.meta.dirname, '../browser');
+
+// Diretório onde as imagens de exercícios serão salvas (pasta source do projeto)
+const projectRoot = resolve(import.meta.dirname, '../../');
+const exercisesFolder = join(projectRoot, 'public', 'exercises');
+
+// Garantir que a pasta exercises existe
+if (!existsSync(exercisesFolder)) {
+  mkdirSync(exercisesFolder, { recursive: true });
+}
+
+// Configurar multer para salvar no diretório correto
+const storage = multer.diskStorage({
+  destination: (_req, _file, cb) => {
+    cb(null, exercisesFolder);
+  },
+  filename: (_req, file, cb) => {
+    // Manter o nome original do arquivo
+    cb(null, file.originalname);
+  },
+});
+const upload = multer({ storage });
 
 const app = express();
 const angularApp = new AngularNodeAppEngine();
 
 /**
- * Example Express Rest API endpoints can be defined here.
- * Uncomment and define endpoints as necessary.
- *
- * Example:
- * ```ts
- * app.get('/api/{*splat}', (req, res) => {
- *   // Handle API request
- * });
- * ```
+ * API endpoint para upload de imagem de exercício.
+ * Salva o arquivo em public/exercises/ e retorna o caminho relativo.
  */
+app.post('/api/upload-exercise-image', upload.single('file'), (req, res) => {
+  if (!req.file) {
+    res.status(400).json({ erro: 'Nenhum arquivo enviado.' });
+    return;
+  }
+
+  const caminhoRelativo = `exercises/${req.file.filename}`;
+  console.log(`Imagem salva em: ${join(exercisesFolder, req.file.filename)}`);
+
+  res.json({
+    sucesso: true,
+    filePath: caminhoRelativo,
+    nomeArquivo: req.file.filename,
+  });
+});
 
 /**
  * Serve static files from /browser

@@ -3,6 +3,7 @@ import { HomePage } from './home-page/home-page';
 import { Workoutpage } from './workoutpage/workoutpage';
 import { CadastroProf } from './cadastro-prof/cadastro-prof';
 import { CadstroUser } from './cadstro-user/cadstro-user';
+import { CadastroExercicio } from './cadastro-exercicio/cadastro-exercicio';
 
 export const routes: Routes = [
   {
@@ -24,5 +25,9 @@ export const routes: Routes = [
   {
     path: 'cadastro-usuario',
     component: CadstroUser,
+  },
+  {
+    path: 'cadastro-exercicio',
+    component: CadastroExercicio,
   },
 ];
