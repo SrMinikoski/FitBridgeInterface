@@ -1,0 +1,311 @@
+* {
+    font-family: Arial, Helvetica, sans-serif;
+    list-style: none;
+    box-sizing: border-box;
+    text-decoration: none;
+    margin: 0;
+    padding: 0;
+}
+
+.content {
+    background-color: #E8D2B3;
+    width: 80%;
+    max-width: 600px;
+    padding: 40px;
+    border-radius: 20px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    margin: 30px auto;
+    text-align: center;
+}
+
+.content h1 {
+    font-size: 40px;
+    color: #E0332B;
+    font-weight: bolder;
+    margin-bottom: 10px;
+}
+
+.subtitle {
+    color: #8F3A33;
+    font-size: 14px;
+    margin-bottom: 30px;
+    opacity: 0.8;
+}
+
+.registration-form {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 25px;
+}
+
+.form-section {
+    border: 2px solid #8F3A33;
+    border-radius: 15px;
+    padding: 20px;
+    background-color: rgba(255, 255, 255, 0.5);
+    text-align: left;
+}
+
+.form-section legend {
+    color: #E0332B;
+    font-size: 16px;
+    font-weight: bold;
+    padding: 0 10px;
+    margin-left: -10px;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 18px;
+}
+
+.form-group:last-child {
+    margin-bottom: 0;
+}
+
+.form-group label {
+    color: #8F3A33;
+    font-weight: 600;
+    margin-bottom: 8px;
+    font-size: 14px;
+}
+
+.form-group input,
+.form-group select {
+    padding: 12px 15px;
+    border: 2px solid #8F3A33;
+    border-radius: 10px;
+    font-size: 14px;
+    font-family: Arial, Helvetica, sans-serif;
+    transition: all 200ms ease-in-out;
+    background-color: white;
+    color: #8F3A33;
+}
+
+.form-group input:focus,
+.form-group select:focus {
+    outline: none;
+    border-color: #E0332B;
+    background-color: #fff;
+    box-shadow: 0 0 0 3px rgba(224, 51, 43, 0.1);
+}
+
+.form-group input::placeholder {
+    color: #8F3A33;
+    opacity: 0.6;
+}
+
+.form-group select {
+    cursor: pointer;
+}
+
+.form-group select option {
+    color: #8F3A33;
+}
+
+/* Estilo para campos físicos em uma linha */
+.form-row-compact {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 12px;
+}
+
+.form-group-compact {
+    display: flex;
+    flex-direction: column;
+}
+
+.form-group-compact label {
+    color: #8F3A33;
+    font-weight: 600;
+    margin-bottom: 6px;
+    font-size: 12px;
+}
+
+.form-group-compact input,
+.form-group-compact select {
+    padding: 10px 10px;
+    width: 110px;
+    border: 2px solid #8F3A33;
+    border-radius: 10px;
+    font-size: 13px;
+    font-family: Arial, Helvetica, sans-serif;
+    transition: all 200ms ease-in-out;
+    background-color: white;
+    color: #8F3A33;
+}
+
+.form-group-compact input:focus,
+.form-group-compact select:focus {
+    outline: none;
+    border-color: #E0332B;
+    background-color: #fff;
+    box-shadow: 0 0 0 3px rgba(224, 51, 43, 0.1);
+}
+
+.form-group-compact select {
+    cursor: pointer;
+}
+
+@media (max-width: 600px) {
+    .form-row-compact {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .content {
+        width: 95%;
+        padding: 25px;
+    }
+}
+
+/* Estilo para checkboxes de objetivos */
+.checkboxes-group {
+    display: flex;
+    flex-direction: row;
+    gap: 8px;
+}
+
+.checkbox-item {
+    width: 28%;
+    height: 140px;
+    border-radius: 20px;
+    display: flex;
+    align-items: center;
+    font-size: 13px;
+    justify-content: center;
+    flex-direction: column-reverse;
+    background-color: white;
+    transition: all 300ms ease-in-out;
+}
+
+.checkbox-item svg{
+  width: 80px; 
+  height: 80px;
+}
+
+.checkbox-item input[type="checkbox"] {
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    width: 20px;
+    height: 20px;
+    border: 2px solid #8F3A33;
+    border-radius: 5px;
+    background-color: white;
+    cursor: pointer;
+    transition: all 300ms ease-in-out;
+    flex-shrink: 0;
+}
+
+.checkbox-item input[type="checkbox"]:hover {
+    border-color: #E0332B;
+    background-color: rgba(224, 51, 43, 0.1);
+}
+
+.checkbox-item input[type="checkbox"]:checked {
+    background-color: #E0332B;
+    border-color: #8F3A33;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+}
+
+.checkbox-item input[type="checkbox"]:checked::after {
+    content: '✓';
+    color: white;
+    font-size: 14px;
+    font-weight: bold;
+    position: absolute;
+}
+
+.checkbox-item label {
+    color: #8F3A33;
+    font-weight: 500;
+    cursor: pointer;
+    user-select: none;
+    margin-bottom: 0;
+}
+
+/* Estilo quando checkbox está marcado */
+.checkbox-item:has(input[type="checkbox"]:checked) {
+    background-color: #E0332B;
+}
+
+.checkbox-item:has(input[type="checkbox"]:checked) label {
+    color: white;
+}
+
+.checkbox-item:has(input[type="checkbox"]:checked) svg {
+    fill: white;
+    stroke: white;
+}
+
+.btn-submit {
+    padding: 14px 40px;
+    background-color: #E0332B;
+    color: white;
+    border: 2px solid #8F3A33;
+    border-radius: 15px;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 200ms ease-in-out;
+    margin-top: 15px;
+}
+
+.btn-submit:hover {
+    background-color: #f8443a;
+    transform: scale(1.05);
+}
+
+.btn-submit:active {
+    transform: scale(0.95);
+}
+
+.signin-link {
+    margin-top: 20px;
+    color: #8F3A33;
+    font-size: 14px;
+}
+
+.signin-link a {
+    color: #E0332B;
+    font-weight: bold;
+    text-decoration: none;
+    border-bottom: 2px solid transparent;
+    transition: border-color 200ms ease-in-out;
+}
+
+.signin-link a:hover {
+    border-bottom-color: #E0332B;
+}
+
+.btn-home {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background-color: #E0332B;
+    border: 2px solid #8F3A33;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 200ms ease-in-out;
+    margin-top: 10px;
+    margin-bottom: -20px;
+}
+
+.btn-home:hover {
+    background-color: #f8443a;
+    transform: scale(1.1);
+}
+
+.btn-home:active {
+    transform: scale(0.95);
+}
