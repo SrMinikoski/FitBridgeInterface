@@ -1,0 +1,157 @@
+<div class="content">
+  <h1>Cadastro de Treino</h1>
+
+  <div class="form-container">
+    <h2>Adicionar Exercício ao Treino</h2>
+    <div class="form-group">
+      <label for="exercise-select">Exercício:</label>
+      <select id="exercise-select" [(ngModel)]="selectedExercise" class="form-input">
+        <option value="">Selecione um exercício</option>
+        <option value="1">Supino Reto</option>
+        <option value="2">Rosca Direta</option>
+        <option value="3">Flexão de Pernas</option>
+        <option value="4">Desenvolvimento com Haltere</option>
+        <option value="5">Puxada na Frente</option>
+      </select>
+    </div>
+
+    <div class="form-group">
+      <label for="reps-input">Repetições:</label>
+      <input id="reps-input" type="number" [(ngModel)]="reps" min="1" class="form-input" />
+    </div>
+
+    <div class="form-group">
+      <label for="sets-input">Séries:</label>
+      <input id="sets-input" type="number" [(ngModel)]="sets" min="1" class="form-input" />
+    </div>
+
+    <div class="form-group">
+      <label for="rest-input">Tempo de Descanço (segundos):</label>
+      <input id="rest-input" type="number" [(ngModel)]="restTime" min="1" class="form-input" />
+    </div>
+
+    <button (click)="addExercise()" class="add-btn">+ Adicionar Exercício</button>
+  </div>
+
+ 
+  <div class="exercises-list" *ngIf="workout.exercises.length > 0">
+    <h2>Exercícios do Treino</h2>
+    <div *ngFor="let exercise of workout.exercises; let i = index" class="card"
+      [class.expanded]="isCardExpanded(i)">
+      <div class="information" *ngIf="editingIndex !== i">
+        <div class="exercise-image">
+          <input type="checkbox" class="exercise-toggle" [checked]="isCardExpanded(i)"
+            (change)="toggleCard(i, $event)" aria-label="Expandir descrição do exercício"
+            [style.background-image]="'url(' + exercise.image + ')'">
+        </div>
+        <div class="exercise-name">
+          <h2>{{ exercise.name }}</h2>
+        </div>
+        <div class="exercise-stats">
+          <div class="stat-group">
+            <img src="icones/reps.png" alt="Repetições" class="stat-icon">
+            <p>{{ exercise.reps }}x</p>
+          </div>
+          <div class="stat-group">
+            <img src="icones/sets.png" alt="Séries" class="stat-icon">
+            <p>{{ exercise.sets }}x</p>
+          </div>
+          <div class="stat-group">
+            <img src="icones/rest.png" alt="Descanso" class="stat-icon">
+            <p>{{ exercise.rest }}s</p>
+          </div>
+        </div>
+        <div class="exercise-actions">
+          <button class="edit-btn" (click)="startEdit(i)" aria-label="Editar exercício">✎</button>
+          <button class="remove-btn" (click)="removeExercise(i)" aria-label="Remover exercício">✕</button>
+        </div>
+      </div>
+
+
+      <div class="information edit-mode" *ngIf="editingIndex === i">
+        <div class="exercise-image">
+          <input type="checkbox" class="exercise-toggle" disabled [style.background-image]="'url(' + exercise.image + ')'">
+        </div>
+        <div class="exercise-name">
+          <h2>{{ exercise.name }}</h2>
+        </div>
+        <div class="exercise-stats edit-stats">
+          <div class="stat-group">
+            <label>Reps:</label>
+            <input type="number" [(ngModel)]="editReps" min="1" class="edit-input">
+          </div>
+          <div class="stat-group">
+            <label>Séries:</label>
+            <input type="number" [(ngModel)]="editSets" min="1" class="edit-input">
+          </div>
+          <div class="stat-group">
+            <label>Descanço:</label>
+            <input type="number" [(ngModel)]="editRestTime" min="1" class="edit-input">
+          </div>
+        </div>
+        <div class="exercise-actions">
+          <button class="save-edit-btn" (click)="saveEdit(i)">✓</button>
+          <button class="cancel-edit-btn" (click)="cancelEdit()">✕</button>
+        </div>
+      </div>
+
+      <div class="description" [class.visible]="isCardExpanded(i)">
+        <h3>Descrição do exercício</h3>
+        <span>{{ exercise.description }}</span>
+      </div>
+    </div>
+  </div>
+
+
+  <div class="workout-details">
+    <h2>Detalhes do Treino</h2>
+
+    <div class="form-group">
+      <label for="title-input">Título do Treino:</label>
+      <input id="title-input" type="text" [(ngModel)]="workout.title" class="form-input" placeholder="Ex: Treino de Peito e Tríceps" />
+    </div>
+
+    <div class="form-group">
+      <label for="description-input">Descrição Geral do Treino:</label>
+      <textarea id="description-input" [(ngModel)]="workout.description" class="form-input textarea"
+        placeholder="Descreva o treino, seu objetivo e qualquer informação adicional..."></textarea>
+    </div>
+
+    <div class="form-group">
+      <label for="muscles-input">Grupos Musculares Visados:</label>
+      <input id="muscles-input" type="text" [(ngModel)]="workout.targetMuscles" class="form-input"
+        placeholder="Ex: Peito, Tríceps, Ombros" />
+    </div>
+
+    <div class="form-group">
+      <label for="gender-input">Gênero Recomendado:</label>
+      <select id="gender-input" [(ngModel)]="workout.recommendedGender" class="form-input">
+        <option value="">Selecione</option>
+        <option value="Masculino">Masculino</option>
+        <option value="Feminino">Feminino</option>
+        <option value="Todos">Todos</option>
+      </select>
+    </div>
+
+    <div class="form-group">
+      <label for="objective-input">Objetivo do Treino:</label>
+      <select id="objective-input" [(ngModel)]="workout.objective" class="form-input">
+        <option value="">Selecione</option>
+        <option value="Ganho de Massa Muscular">Ganho de Massa Muscular</option>
+        <option value="Perda de Peso">Perda de Peso</option>
+        <option value="Força">Força</option>
+        <option value="Resistência">Resistência</option>
+        <option value="Definição">Definição</option>
+      </select>
+    </div>
+
+    <button (click)="saveWorkout()" class="save-btn">Salvar Treino</button>
+  </div>
+
+  <a routerLink="/home" class="btn-home" title="Voltar à página inicial">
+    <svg xmlns="http://www.w3.org/2000/svg" height="20px" viewBox="0 -960 960 960" width="20px" fill="#FFFFFF">
+      <path
+        d="M264-216h96v-240h240v240h96v-348L480-726 264-564v348Zm-72 72v-456l288-216 288 216v456H528v-240h-96v240H192Zm288-327Z" />
+    </svg>
+  </a>
+</div>
