@@ -1,0 +1,364 @@
+* {
+  font-family: Arial, Helvetica, sans-serif;
+  list-style: none;
+  box-sizing: border-box;
+  text-decoration: none;
+}
+
+.content {
+  background-color: #E8D2B3;
+  width: 90%;
+  max-width: 1400px;
+  padding: 30px;
+  border-radius: 20px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  margin: 20px auto;
+  text-align: center;
+}
+
+h1 {
+  color: #E0332B;
+  font-weight: bolder;
+  font-size: 32px;
+  margin: 20px 0 10px 0;
+}
+
+.subtitle {
+  color: #8F3A33;
+  font-size: 14px;
+  margin: 0 0 20px 0;
+  font-weight: 500;
+}
+
+/* Barra de Pesquisa */
+.searchbar {
+  width: 100%;
+  max-width: 500px;
+  margin: 20px auto 30px;
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.search-input {
+  width: 100%;
+  padding: 12px 15px 12px 40px;
+  border-radius: 25px;
+  border: 2px solid #8F3A33;
+  background-color: #ffffff;
+  font-size: 14px;
+  color: #000000;
+  transition: all 200ms ease-in-out;
+}
+
+.search-input::placeholder {
+  color: #8F3A33;
+  opacity: 0.7;
+}
+
+.search-input:focus {
+  outline: none;
+  border-color: #E0332B;
+  box-shadow: 0 0 8px rgba(224, 51, 43, 0.2);
+}
+
+.search-icon {
+  position: absolute;
+  left: 12px;
+  pointer-events: none;
+}
+
+/* Grid de Treinos */
+.treinos-grid {
+  width: 100%;
+  margin: 20px 0;
+  display: flex;
+  justify-content: center;
+}
+
+.grid-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 25px;
+  width: 100%;
+  max-width: 1400px;
+}
+
+/* Card do Treino */
+.treino-card {
+  background-color: #ffffff;
+  border-radius: 15px;
+  overflow: hidden;
+  box-shadow: 0 4px 12px rgba(224, 51, 43, 0.15);
+  transition: all 300ms ease-in-out;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  border: 2px solid transparent;
+}
+
+.treino-card:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 8px 20px rgba(224, 51, 43, 0.25);
+  border-color: #E0332B;
+}
+
+.treino-card:active {
+  transform: translateY(-4px);
+}
+
+/* Imagem do Card */
+.card-image {
+  position: relative;
+  width: 100%;
+  height: 180px;
+  overflow: hidden;
+  background-color: #f0f0f0;
+}
+
+.treino-imagem {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 300ms ease-in-out;
+}
+
+.treino-card:hover .treino-imagem {
+  transform: scale(1.08);
+}
+
+/* Overlay da Imagem */
+.card-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color 300ms ease-in-out;
+}
+
+.treino-card:hover .card-overlay {
+  background-color: rgba(0, 0, 0, 0.4);
+}
+
+.btn-selecionar {
+  background-color: #E0332B;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 25px;
+  font-weight: bold;
+  font-size: 13px;
+  cursor: pointer;
+  transition: all 200ms ease-in-out;
+  opacity: 0;
+  transform: scale(0.8);
+}
+
+.treino-card:hover .btn-selecionar {
+  opacity: 1;
+  transform: scale(1);
+}
+
+.btn-selecionar:active {
+  transform: scale(0.95);
+}
+
+/* Conteúdo do Card */
+.card-content {
+  padding: 18px;
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.treino-titulo {
+  color: #8F3A33;
+  font-size: 16px;
+  font-weight: bold;
+  margin: 0;
+  line-height: 1.3;
+  text-align: left;
+}
+
+.treino-descricao {
+  color: #666666;
+  font-size: 12px;
+  line-height: 1.4;
+  margin: 0;
+  text-align: left;
+  display: -webkit-box;
+  /* -webkit-line-clamp: 2; */
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+/* Informações do Card */
+.card-info {
+  display: flex;
+  gap: 15px;
+  font-size: 12px;
+  color: #555555;
+  text-align: left;
+  margin: 8px 0;
+}
+
+.info-item {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.info-icon {
+  flex-shrink: 0;
+}
+
+/* Tags */
+.card-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 10px 0;
+}
+
+.tag {
+  display: inline-block;
+  padding: 5px 10px;
+  border-radius: 15px;
+  font-size: 11px;
+  font-weight: bold;
+  white-space: nowrap;
+}
+
+.tag.objetivo {
+  background-color: #FFE8E5;
+  color: #E0332B;
+  border: 1px solid #E0332B;
+}
+
+.tag.musculos {
+  background-color: #FFF4ED;
+  color: #8F3A33;
+  border: 1px solid #8F3A33;
+}
+
+/* Data de Publicação */
+.card-data {
+  color: #999999;
+  font-size: 11px;
+  margin: 8px 0 0 0;
+  text-align: left;
+  margin-top: auto;
+}
+
+/* Mensagem de Sem Resultados */
+.sem-resultados {
+  grid-column: 1 / -1;
+  text-align: center;
+  padding: 60px 20px;
+  color: #8F3A33;
+}
+
+.sem-resultados svg {
+  opacity: 0.5;
+  margin-bottom: 20px;
+}
+
+.sem-resultados h2 {
+  color: #8F3A33;
+  font-size: 20px;
+  margin: 15px 0;
+}
+
+.sem-resultados p {
+  color: #999999;
+  font-size: 14px;
+}
+
+/* Responsividade */
+@media (max-width: 768px) {
+  .content {
+    width: 95%;
+    padding: 20px;
+  }
+
+  h1 {
+    font-size: 24px;
+  }
+
+  .searchbar {
+    max-width: 100%;
+  }
+
+  .grid-container {
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    gap: 15px;
+  }
+
+  .treino-titulo {
+    font-size: 14px;
+  }
+
+  .treino-descricao {
+    font-size: 11px;
+  }
+}
+
+@media (max-width: 480px) {
+  .content {
+    width: 100%;
+    padding: 15px;
+    border-radius: 10px;
+  }
+
+  h1 {
+    font-size: 20px;
+    margin: 15px 0 10px 0;
+  }
+
+  .subtitle {
+    font-size: 12px;
+  }
+
+  .grid-container {
+    grid-template-columns: 1fr;
+  }
+
+  .card-info {
+    flex-direction: column;
+    gap: 5px;
+  }
+
+  .card-tags {
+    flex-direction: column;
+  }
+
+  .tag {
+    width: 100%;
+    text-align: center;
+  }
+}
+
+/* Animações Suaves */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.treino-card {
+  animation: fadeIn 300ms ease-in-out;
+}

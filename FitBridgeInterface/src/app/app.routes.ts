@@ -5,6 +5,7 @@ import { CadastroProf } from './cadastro-prof/cadastro-prof';
 import { CadstroUser } from './cadstro-user/cadstro-user';
 import { CadastroExercicio } from './cadastro-exercicio/cadastro-exercicio';
 import { CadastroTreino } from './cadastro-treino/cadastro-treino';
+import { ListaTreinos } from './lista-treinos/lista-treinos';
 
 export const routes: Routes = [
   {
@@ -18,6 +19,10 @@ export const routes: Routes = [
   {
     path: 'workout',
     component: Workoutpage,
+  },
+  {
+    path: 'treinos',
+    component: ListaTreinos,
   },
   {
     path: 'cadastro-professor',
