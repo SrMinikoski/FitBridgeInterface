@@ -106,6 +106,15 @@
   <div class="workout-details">
     <h2>Detalhes do Treino</h2>
 
+    <!-- Mensagem de Sucesso/Erro -->
+    <div *ngIf="mensagem.visivel" [ngClass]="['mensagem', mensagem.tipo]">
+      <div class="mensagem-conteudo">
+        <span *ngIf="mensagem.tipo === 'sucesso'" class="icone-sucesso">✓</span>
+        <span *ngIf="mensagem.tipo === 'erro'" class="icone-erro">✕</span>
+        <p>{{ mensagem.texto }}</p>
+      </div>
+    </div>
+
     <div class="form-group">
       <label for="title-input">Título do Treino:</label>
       <input id="title-input" type="text" [(ngModel)]="workout.title" class="form-input" placeholder="Ex: Treino de Peito e Tríceps" />
@@ -144,6 +153,25 @@
         <option value="Definição">Definição</option>
       </select>
     </div>
+
+    <!-- Seção de Imagem de Capa -->
+    <fieldset class="form-section">
+      <legend>Imagem de Capa do Treino</legend>
+
+      <div class="form-group">
+        <label for="workoutImage" class="form-label">Selecionar imagem de capa:</label>
+        <div class="file-input-wrapper">
+          <input type="file" id="workoutImage" name="workoutImage" accept="image/*" (change)="onImageSelect($event)" required>
+          <label for="workoutImage" class="file-label">Escolher arquivo</label>
+        </div>
+        <p class="file-name" *ngIf="nomeImagem">{{ nomeImagem }}</p>
+      </div>
+
+      <div class="image-preview" *ngIf="imagemPreview">
+        <img [src]="imagemPreview" alt="Preview da imagem de capa" class="preview-img">
+        <p class="preview-label">Preview da imagem</p>
+      </div>
+    </fieldset>
 
     <button (click)="saveWorkout()" class="save-btn">Salvar Treino</button>
   </div>

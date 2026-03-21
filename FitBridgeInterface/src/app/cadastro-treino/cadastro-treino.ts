@@ -1,7 +1,8 @@
-import { Component } from '@angular/core';
+import { Component, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
+import { HttpClient } from '@angular/common/http';
 
 interface Exercise {
   id: number;
@@ -19,7 +20,14 @@ interface Workout {
   targetMuscles: string;
   recommendedGender: string;
   objective: string;
+  coverImage: string;
   exercises: Exercise[];
+}
+
+interface Mensagem {
+  tipo: 'sucesso' | 'erro';
+  texto: string;
+  visivel: boolean;
 }
 
 @Component({
@@ -44,6 +52,19 @@ export class CadastroTreino {
   editSets: number = 0;
   editRestTime: number = 0;
 
+  // Imagem de capa
+  nomeImagem: string = '';
+  imagemPreview: string | null = null;
+  caminhoImagem: string = '';
+  arquivoImagem: File | null = null;
+
+  // Mensagem
+  mensagem: Mensagem = {
+    tipo: 'sucesso',
+    texto: '',
+    visivel: false,
+  };
+
   // Dados do treino
   workout: Workout = {
     title: '',
@@ -51,8 +72,14 @@ export class CadastroTreino {
     targetMuscles: '',
     recommendedGender: '',
     objective: '',
+    coverImage: '',
     exercises: [],
   };
+
+  constructor(
+    private cdr: ChangeDetectorRef,
+    private http: HttpClient
+  ) {}
 
   // Exercícios da API serão substituídos por dados mockados para desenvolvimento posteriormente
   mockExercises = [
@@ -138,11 +165,90 @@ export class CadastroTreino {
 
   saveWorkout(): void {
     if (!this.workout.title || this.workout.exercises.length === 0) {
-      alert('Por favor, defina um título e adicione pelo menos um exercício ao treino.');
+      this.exibirMensagem('erro', 'Por favor, defina um título e adicione pelo menos um exercício ao treino.');
       return;
     }
-    console.log('Treino salvo:', this.workout);
-    alert('Treino salvo com sucesso!');
+
+    if (!this.arquivoImagem) {
+      this.exibirMensagem('erro', 'Selecione uma imagem de capa para o treino.');
+      return;
+    }
+
+    // Enviar imagem para o servidor salvar em public/workouts/
+    const formData = new FormData();
+    formData.append('file', this.arquivoImagem);
+
+    this.http.post<any>('/api/upload-workout-image', formData).subscribe({
+      next: (response) => {
+        this.caminhoImagem = response.filePath;
+        this.workout.coverImage = this.caminhoImagem;
+
+        console.log('Treino salvo:', this.workout);
+        console.log('Imagem de capa salva em: public/workouts/' + response.nomeArquivo);
+
+        this.exibirMensagem('sucesso', 'Treino "' + this.workout.title + '" cadastrado com sucesso!');
+
+        // Aguardar 3 segundos antes de limpar (mensagem desaparece em 3 segundos)
+        setTimeout(() => {
+          this.limparFormulario();
+          this.cdr.detectChanges();
+        }, 3500);
+      },
+      error: (error) => {
+        console.error('Erro ao enviar imagem:', error);
+        this.exibirMensagem('erro', 'Erro ao salvar imagem. Tente novamente.');
+      },
+    });
+  }
+
+  onImageSelect(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    if (!input.files || !input.files[0]) return;
+
+    const file = input.files[0];
+    this.arquivoImagem = file;
+    this.nomeImagem = file.name;
+
+    // Criar preview da imagem IMEDIATAMENTE
+    const reader = new FileReader();
+    reader.onload = () => {
+      this.imagemPreview = reader.result as string;
+      this.cdr.detectChanges();
+    };
+    reader.readAsDataURL(file);
+  }
+
+  limparFormulario(): void {
+    this.workout = {
+      title: '',
+      description: '',
+      targetMuscles: '',
+      recommendedGender: '',
+      objective: '',
+      coverImage: '',
+      exercises: [],
+    };
+    this.expandedCards = [];
+    this.nomeImagem = '';
+    this.imagemPreview = null;
+    this.caminhoImagem = '';
+    this.arquivoImagem = null;
+    this.selectedExercise = '';
+    this.reps = 0;
+    this.sets = 0;
+    this.restTime = 0;
+  }
+
+  exibirMensagem(tipo: 'sucesso' | 'erro', texto: string): void {
+    this.mensagem = { tipo, texto, visivel: true };
+    // forçar atualização imediata da UI
+    this.cdr.detectChanges();
+
+    // Limpar mensagem após 3 segundos
+    setTimeout(() => {
+      this.mensagem.visivel = false;
+      this.cdr.detectChanges();
+    }, 3000);
   }
 
   startEdit(index: number): void {
