@@ -2,14 +2,17 @@
     <h1>Cadastro de Usuário</h1>
     <p class="subtitle">Preencha todos os campos abaixo para criar sua conta</p>
 
-    <form class="registration-form">
+    <div *ngIf="erro" class="erro-mensagem" style="color:#d32f2f;background:#fde8e8;padding:10px;border-radius:6px;margin-bottom:12px;text-align:center;">{{ erro }}</div>
+    <div *ngIf="sucesso" class="sucesso-mensagem" style="color:#2e7d32;background:#e8f5e9;padding:10px;border-radius:6px;margin-bottom:12px;text-align:center;">{{ sucesso }}</div>
+
+    <form class="registration-form" (ngSubmit)="cadastrar()">
         <!-- Seção de Informações Pessoais -->
         <fieldset class="form-section">
             <legend>Informações Pessoais</legend>
 
             <div class="form-group">
                 <label for="fullname">Seu nome completo:</label>
-                <input type="text" id="fullname" name="fullname" placeholder="Digite seu nome completo" required>
+                <input type="text" id="fullname" name="fullname" [(ngModel)]="nome" placeholder="Digite seu nome completo" required>
             </div>
 
             <div class="form-group">
@@ -17,15 +20,15 @@
                 <div class="form-row-compact">
                     <div class="form-group-compact">
                         <label for="age">Idade:</label>
-                        <input type="number" id="age" name="age" min="0" max="120" placeholder="20" required>
+                        <input type="number" id="age" name="age" [(ngModel)]="idade" min="0" max="120" placeholder="20" required>
                     </div>
                     <div class="form-group-compact">
                         <label for="weight">Peso (kg):</label>
-                        <input type="number" id="weight" name="weight" min="0" step="0.1" placeholder="70" required>
+                        <input type="number" id="weight" name="peso" [(ngModel)]="peso" min="0" step="0.1" placeholder="70" required>
                     </div>
                     <div class="form-group-compact">
                         <label for="gender">Gênero:</label>
-                        <select id="gender" name="gender" required>
+                        <select id="gender" name="gender" [(ngModel)]="sexo" required>
                             <option value="" disabled selected>Selecione</option>
                             <option value="masculino">Masculino</option>
                             <option value="feminino">Feminino</option>
@@ -34,7 +37,7 @@
                     </div>
                     <div class="form-group-compact">
                         <label for="height">Altura (cm):</label>
-                        <input type="number" id="height" name="height" min="0" placeholder="175" required>
+                        <input type="number" id="height" name="height" [(ngModel)]="altura" min="0" placeholder="175" required>
                     </div>
                 </div>
             </div>
@@ -103,7 +106,7 @@
 
             <div class="form-group">
                 <label for="email">Email:</label>
-                <input type="email" id="email" name="email" placeholder="seu.email@example.com" required>
+                <input type="email" id="email" name="email" [(ngModel)]="email" placeholder="seu.email@example.com" required>
             </div>
 
             <div class="form-group">
@@ -118,17 +121,20 @@
 
             <div class="form-group">
                 <label for="password">Senha:</label>
-                <input type="password" id="password" name="password" placeholder="Crie uma senha forte" required>
+                <input type="password" id="password" name="password" [(ngModel)]="senha" placeholder="Crie uma senha forte" required>
             </div>
 
             <div class="form-group">
                 <label for="confirmPassword">Confirmar Senha:</label>
-                <input type="password" id="confirmPassword" name="confirmPassword" placeholder="Repita a senha"
+                <input type="password" id="confirmPassword" name="confirmPassword" [(ngModel)]="confirmarSenha" placeholder="Repita a senha"
                     required>
             </div>
         </fieldset>
 
-        <button type="submit" class="btn-submit">Cadastrar</button>
+        <button type="submit" class="btn-submit" [disabled]="carregando">
+            <span *ngIf="!carregando">Cadastrar</span>
+            <span *ngIf="carregando">Cadastrando...</span>
+        </button>
     </form>
 
     <p class="signin-link">Já possui conta? <a href="/login">Faça login</a></p>

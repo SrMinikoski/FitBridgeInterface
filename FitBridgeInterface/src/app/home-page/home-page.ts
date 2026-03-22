@@ -1,5 +1,7 @@
-import { Component } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { Navigation } from '../navigation/navigation';
+import { AuthService, Usuario } from '../services/auth.service';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-home-page',
@@ -7,4 +9,17 @@ import { Navigation } from '../navigation/navigation';
   templateUrl: './home-page.html',
   styleUrl: './home-page.css',
 })
-export class HomePage {}
+export class HomePage implements OnInit, OnDestroy {
+  usuarioLogado: Usuario | null = null;
+  private sub: Subscription | null = null;
+
+  constructor(private authService: AuthService) {}
+
+  ngOnInit(): void {
+    this.sub = this.authService.usuario$.subscribe(u => this.usuarioLogado = u);
+  }
+
+  ngOnDestroy(): void {
+    this.sub?.unsubscribe();
+  }
+}

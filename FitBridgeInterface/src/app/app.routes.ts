@@ -6,38 +6,51 @@ import { CadstroUser } from './cadstro-user/cadstro-user';
 import { CadastroExercicio } from './cadastro-exercicio/cadastro-exercicio';
 import { CadastroTreino } from './cadastro-treino/cadastro-treino';
 import { ListaTreinos } from './lista-treinos/lista-treinos';
+import { Login } from './login/login';
+import { AuthGuard } from './services/auth.guard';
 
 export const routes: Routes = [
   {
     path: '',
-    component: HomePage,
+    component: Login,
+  },
+  {
+    path: 'login',
+    component: Login,
   },
   {
     path: 'home',
     component: HomePage,
+    canActivate: [AuthGuard],
   },
   {
     path: 'workout',
     component: Workoutpage,
+    canActivate: [AuthGuard],
   },
   {
     path: 'treinos',
     component: ListaTreinos,
+    canActivate: [AuthGuard],
   },
   {
     path: 'cadastro-professor',
     component: CadastroProf,
+    canActivate: [AuthGuard],
   },
   {
     path: 'cadastro-usuario',
     component: CadstroUser,
+    canActivate: [AuthGuard],
   },
   {
     path: 'cadastro-exercicio',
     component: CadastroExercicio,
+    canActivate: [AuthGuard],
   },
   {
     path: 'cadastro-treino',
     component: CadastroTreino,
+    canActivate: [AuthGuard],
   },
 ];
