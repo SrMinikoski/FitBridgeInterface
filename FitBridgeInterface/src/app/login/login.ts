@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
@@ -11,13 +11,20 @@ import { AuthService } from '../services/auth.service';
   templateUrl: './login.html',
   styleUrls: ['./login.css']
 })
-export class Login {
+export class Login implements OnInit {
   email: string = '';
   senha: string = '';
   carregando: boolean = false;
   erro: string = '';
 
   constructor(private authService: AuthService, private router: Router) {}
+
+  ngOnInit(): void {
+    // Se já está logado, redireciona para home
+    if (this.authService.estaLogado()) {
+      this.router.navigate(['/home']);
+    }
+  }
 
   login() {
     if (!this.email || !this.senha) {

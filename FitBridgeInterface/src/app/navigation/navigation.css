@@ -1,7 +1,6 @@
 .navegation {
     background-color: #E0332B;
-    width: auto;
-    min-width: 300px;
+    width: 180px;
     height: 55px;
     display: flex;
     justify-content: center;
@@ -18,7 +17,7 @@
     justify-content: center;
     align-items: center;
     margin: 10px;
-    gap: 10px;
+    gap: 20px;
 }
 
 .navegation ul li {
