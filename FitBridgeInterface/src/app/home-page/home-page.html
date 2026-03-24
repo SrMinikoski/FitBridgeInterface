@@ -34,33 +34,52 @@
       <svg id="proficon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640"><!--!Font Awesome Free v7.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2026 Fonticons, Inc.--><path d="M192 144C222.9 144 248 118.9 248 88C248 57.1 222.9 32 192 32C161.1 32 136 57.1 136 88C136 118.9 161.1 144 192 144zM176 576L176 416C176 407.2 183.2 400 192 400C200.8 400 208 407.2 208 416L208 576C208 593.7 222.3 608 240 608C257.7 608 272 593.7 272 576L272 240L400 240C417.7 240 432 225.7 432 208C432 190.3 417.7 176 400 176L384 176L384 128L576 128L576 320L384 320L384 288L320 288L320 336C320 362.5 341.5 384 368 384L592 384C618.5 384 640 362.5 640 336L640 112C640 85.5 618.5 64 592 64L368 64C341.5 64 320 85.5 320 112L320 176L197.3 176C151.7 176 108.8 197.6 81.7 234.2L14.3 324.9C3.8 339.1 6.7 359.1 20.9 369.7C35.1 380.3 55.1 377.3 65.7 363.1L112 300.7L112 576C112 593.7 126.3 608 144 608C161.7 608 176 593.7 176 576z"/></svg>
     </span>
   </h1>
-  <div class="dashboard">
-    <a href="#" class="dash">
-      <h2>Ultimo Treino</h2>
-      <p>Título do Treino</p>
-    </a>
-    <a href="#" class="dash">
-      <h2>Total de Treinos</h2>
-      <p>Dados</p>
-    </a>
-    <a href="#" class="dash">
-      <h2>Treinos por semana</h2>
-      <p>2</p>
-    </a>
+  <ng-container *ngIf="isInstrutor(); else alunoCards">
+    <div class="dashboard">
+      <a href="/cadastro-treino" class="dash">
+        <h2>Cadastrar Treino</h2>
+        <p>Criar novo treino</p>
+      </a>
+      <a href="/cadastro-exercicio" class="dash">
+        <h2>Cadastrar Exercício</h2>
+        <p>Adicionar novo exercício</p>
+      </a>
+      <a href="/meus-treinos" class="dash">
+        <h2>Meus Treinos</h2>
+        <p>Listar treinos cadastrados</p>
+      </a>
+    </div>
+  </ng-container>
 
-    <a href="#" class="dash">
-      <h2>Calorias semanais</h2>
-      <p>1647</p>
-    </a>
-    <a href="#" class="dash">
-      <h2>Nota geral</h2>
-      <p>89</p>
-    </a>
-    <a href="#" class="dash">
-      <h2>Treino Favorito</h2>
-      <p>Título do Treino</p>
-    </a>
-  </div>
+  <ng-template #alunoCards>
+    <div class="dashboard">
+      <a href="#" class="dash">
+        <h2>Ultimo Treino</h2>
+        <p>Título do Treino</p>
+      </a>
+      <a href="#" class="dash">
+        <h2>Total de Treinos</h2>
+        <p>Dados</p>
+      </a>
+      <a href="#" class="dash">
+        <h2>Treinos por semana</h2>
+        <p>2</p>
+      </a>
+
+      <a href="#" class="dash">
+        <h2>Calorias semanais</h2>
+        <p>1647</p>
+      </a>
+      <a href="#" class="dash">
+        <h2>Nota geral</h2>
+        <p>89</p>
+      </a>
+      <a href="#" class="dash">
+        <h2>Treino Favorito</h2>
+        <p>Título do Treino</p>
+      </a>
+    </div>
+  </ng-template>
 
   <app-navigation></app-navigation>
 </div>
