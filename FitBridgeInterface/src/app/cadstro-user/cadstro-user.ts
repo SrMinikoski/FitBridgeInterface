@@ -8,7 +8,7 @@ import { HttpClient } from '@angular/common/http';
   selector: 'app-cadstro-user',
   imports: [CommonModule, FormsModule, RouterLink],
   templateUrl: './cadstro-user.html',
-  styleUrl: './cadstro-user.css',
+  styleUrls: ['./cadstro-user.css'],
 })
 export class CadstroUser {
   nome = '';
@@ -23,6 +23,11 @@ export class CadstroUser {
   carregando = false;
   erro = '';
   sucesso = '';
+  userType: 'aluno' | 'professor' = 'aluno';
+
+  // Campos específicos para professor
+  formacao = '';
+  cref = '';
 
   private apiUrl = '/api';
 
@@ -42,28 +47,57 @@ export class CadstroUser {
     }
 
     this.carregando = true;
+    if (this.userType === 'aluno') {
+      const aluno = {
+        nome: this.nome,
+        sexo: this.sexo || null,
+        idade: this.idade,
+        altura: this.altura,
+        peso: this.peso,
+        objetivo: this.objetivo || null,
+        email: this.email,
+        senha: this.senha,
+      };
 
-    const aluno = {
-      nome: this.nome,
-      sexo: this.sexo || null,
-      idade: this.idade,
-      altura: this.altura,
-      peso: this.peso,
-      objetivo: this.objetivo || null,
-      email: this.email,
-      senha: this.senha,
-    };
+      this.http.post<any>(`${this.apiUrl}/alunos`, aluno).subscribe({
+        next: () => {
+          this.carregando = false;
+          this.sucesso = 'Conta de aluno criada com sucesso! Redirecionando...';
+          setTimeout(() => this.router.navigate(['/login']), 1500);
+        },
+        error: () => {
+          this.carregando = false;
+          this.erro = 'Erro ao cadastrar aluno. Tente novamente.';
+        },
+      });
+    } else {
+      // Validação simples para professor
+      if (!this.formacao) {
+        this.carregando = false;
+        this.erro = 'Preencha a formação/profissão do professor.';
+        return;
+      }
 
-    this.http.post<any>(`${this.apiUrl}/alunos`, aluno).subscribe({
-      next: () => {
-        this.carregando = false;
-        this.sucesso = 'Conta criada com sucesso! Redirecionando...';
-        setTimeout(() => this.router.navigate(['/login']), 1500);
-      },
-      error: () => {
-        this.carregando = false;
-        this.erro = 'Erro ao cadastrar. Tente novamente.';
-      },
-    });
+      const professor = {
+        nome: this.nome,
+        formacao: this.formacao,
+        registro: this.cref || null,
+        email: this.email,
+        senha: this.senha,
+      };
+
+      // A API usa o termo 'instrutores' para o recurso de professores/instrutores
+      this.http.post<any>(`${this.apiUrl}/instrutores`, professor).subscribe({
+        next: () => {
+          this.carregando = false;
+          this.sucesso = 'Conta de instrutor criada com sucesso! Redirecionando...';
+          setTimeout(() => this.router.navigate(['/login']), 1500);
+        },
+        error: () => {
+          this.carregando = false;
+          this.erro = 'Erro ao cadastrar instrutor. Tente novamente.';
+        },
+      });
+    }
   }
 }

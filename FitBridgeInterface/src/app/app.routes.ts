@@ -41,7 +41,6 @@ export const routes: Routes = [
   {
     path: 'cadastro-usuario',
     component: CadstroUser,
-    canActivate: [AuthGuard],
   },
   {
     path: 'cadastro-exercicio',
