@@ -26,7 +26,6 @@ export const routes: Routes = [
   {
     path: 'workout',
     component: Workoutpage,
-    canActivate: [AuthGuard],
   },
   {
     path: 'treinos',

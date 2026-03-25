@@ -29,7 +29,7 @@ export class CadstroUser {
   formacao = '';
   cref = '';
 
-  private apiUrl = '/api';
+  private apiUrl = 'http://localhost:8080/api';
 
   constructor(private http: HttpClient, private router: Router) {}
 

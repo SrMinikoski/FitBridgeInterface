@@ -64,7 +64,7 @@ export class CadastroExercicio {
     const formData = new FormData();
     formData.append('file', this.arquivoImagem);
 
-    this.http.post<any>('/api/upload-exercise-image', formData).subscribe({
+    this.http.post<any>(`${this.apiUrl}/upload-exercise-image`, formData).subscribe({
       next: (response) => {
         // 2. Cadastrar exercício na API Spring Boot com o caminho da imagem
         const dadosExercicio = {
