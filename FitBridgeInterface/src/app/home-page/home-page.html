@@ -36,15 +36,15 @@
   </h1>
   <ng-container *ngIf="isInstrutor(); else alunoCards">
     <div class="dashboard">
-      <a href="/cadastro-treino" class="dash">
+      <a routerLink="/cadastro-treino" class="dash">
         <h2>Cadastrar Treino</h2>
         <p>Criar novo treino</p>
       </a>
-      <a href="/cadastro-exercicio" class="dash">
+      <a routerLink="/cadastro-exercicio" class="dash">
         <h2>Cadastrar Exercício</h2>
         <p>Adicionar novo exercício</p>
       </a>
-      <a href="/meus-treinos" class="dash">
+      <a routerLink="/treinos" class="dash">
         <h2>Meus Treinos</h2>
         <p>Listar treinos cadastrados</p>
       </a>

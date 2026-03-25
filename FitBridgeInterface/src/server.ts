@@ -11,8 +11,8 @@ import multer from 'multer';
 
 const browserDistFolder = join(import.meta.dirname, '../browser');
 
-// Diretório onde as imagens de exercícios serão salvas (pasta source do projeto)
-const projectRoot = resolve(import.meta.dirname, '../../');
+// Diretório raiz do projeto (onde ng serve é executado)
+const projectRoot = process.cwd();
 const exercisesFolder = join(projectRoot, 'public', 'exercises');
 const workoutsFolder = join(projectRoot, 'public', 'workouts');
 

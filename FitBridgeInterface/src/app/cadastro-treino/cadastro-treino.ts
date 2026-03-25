@@ -1,11 +1,22 @@
-import { Component, ChangeDetectorRef } from '@angular/core';
+import { Component, ChangeDetectorRef, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
+import { AuthService } from '../services/auth.service';
+
+interface ApiExercicio {
+  id: number;
+  nome: string;
+  descricao: string;
+  musculoAlvo: string;
+  musculosAuxiliares: string;
+  diretorioImagem: string;
+}
 
 interface Exercise {
   id: number;
+  exercicioId: number;
   name: string;
   reps: number;
   sets: number;
@@ -18,9 +29,6 @@ interface Workout {
   title: string;
   description: string;
   targetMuscles: string;
-  recommendedGender: string;
-  objective: string;
-  coverImage: string;
   exercises: Exercise[];
 }
 
@@ -37,7 +45,9 @@ interface Mensagem {
   templateUrl: './cadastro-treino.html',
   styleUrl: './cadastro-treino.css',
 })
-export class CadastroTreino {
+export class CadastroTreino implements OnInit {
+  private apiUrl = 'http://localhost:8080/api';
+
   expandedCards: boolean[] = [];
   editingIndex: number | null = null;
 
@@ -52,12 +62,6 @@ export class CadastroTreino {
   editSets: number = 0;
   editRestTime: number = 0;
 
-  // Imagem de capa
-  nomeImagem: string = '';
-  imagemPreview: string | null = null;
-  caminhoImagem: string = '';
-  arquivoImagem: File | null = null;
-
   // Mensagem
   mensagem: Mensagem = {
     tipo: 'sucesso',
@@ -70,55 +74,33 @@ export class CadastroTreino {
     title: '',
     description: '',
     targetMuscles: '',
-    recommendedGender: '',
-    objective: '',
-    coverImage: '',
     exercises: [],
   };
 
+  // Exercícios carregados da API
+  exerciciosDisponiveis: ApiExercicio[] = [];
+
   constructor(
     private cdr: ChangeDetectorRef,
-    private http: HttpClient
+    private http: HttpClient,
+    private authService: AuthService
   ) {}
 
-  // Exercícios da API serão substituídos por dados mockados para desenvolvimento posteriormente
-  mockExercises = [
-    {
-      id: 1,
-      name: 'Supino Reto',
-      description:
-        'Exercício de pressão para peitoral. Deite-se no supino com os pés apoiados no chão. Segure o haltere ao nível do peitoral e empurre para cima até a extensão completa dos braços.',
-      image: '/exercises/biceps_apoiado.avif',
-    },
-    {
-      id: 2,
-      name: 'Rosca Direta',
-      description:
-        'Exercício de flexão do cotovelo para bíceps. De pé, com os halteres nas mãos e os braços estendidos ao longo do corpo, flexione os cotovelos elevando os halteres até a altura dos ombros.',
-      image: '/exercises/biceps_apoiado.avif',
-    },
-    {
-      id: 3,
-      name: 'Flexão de Pernas',
-      description:
-        'Exercício para quadríceps utilizando máquina de leg press. Sente-se na máquina, posicione os pés no mecanismo de empurra e estenda as pernas.',
-      image: '/exercises/biceps_apoiado.avif',
-    },
-    {
-      id: 4,
-      name: 'Desenvolvimento com Haltere',
-      description:
-        'Exercício para ombros. Sentado ou de pé, com haltere na altura dos ombros, empurre para cima até a extensão completa dos braços.',
-      image: '/exercises/biceps_apoiado.avif',
-    },
-    {
-      id: 5,
-      name: 'Puxada na Frente',
-      description:
-        'Exercício para costas. Sentado na máquina, puxe a barra em direção ao peitoral, contraindo o músculo do dorso.',
-      image: '/exercises/biceps_apoiado.avif',
-    },
-  ];
+  ngOnInit(): void {
+    this.carregarExercicios();
+  }
+
+  carregarExercicios(): void {
+    this.http.get<ApiExercicio[]>(`${this.apiUrl}/exercicios`).subscribe({
+      next: (exercicios) => {
+        this.exerciciosDisponiveis = exercicios;
+      },
+      error: (err) => {
+        console.error('Erro ao carregar exercícios:', err);
+        this.exibirMensagem('erro', 'Erro ao carregar exercícios da API. Verifique se o servidor está rodando.');
+      },
+    });
+  }
 
   toggleCard(index: number, event: Event): void {
     event.stopPropagation();
@@ -135,21 +117,21 @@ export class CadastroTreino {
       return;
     }
 
-    const exercise = this.mockExercises.find(e => e.id.toString() === this.selectedExercise);
-    if (exercise) {
+    const exercicio = this.exerciciosDisponiveis.find(e => e.id.toString() === this.selectedExercise);
+    if (exercicio) {
       const newExercise: Exercise = {
         id: this.workout.exercises.length + 1,
-        name: exercise.name,
+        exercicioId: exercicio.id,
+        name: exercicio.nome,
         reps: this.reps,
         sets: this.sets,
         rest: this.restTime,
-        image: exercise.image,
-        description: exercise.description,
+        image: exercicio.diretorioImagem || '/exercises/biceps_apoiado.avif',
+        description: exercicio.descricao,
       };
 
       this.workout.exercises.push(newExercise);
       this.expandedCards.push(false);
-
 
       this.selectedExercise = '';
       this.reps = 0;
@@ -169,53 +151,38 @@ export class CadastroTreino {
       return;
     }
 
-    if (!this.arquivoImagem) {
-      this.exibirMensagem('erro', 'Selecione uma imagem de capa para o treino.');
+    const usuario = this.authService.getUsuarioLogado();
+    if (!usuario) {
+      this.exibirMensagem('erro', 'Usuário não está logado.');
       return;
     }
 
-    // Enviar imagem para o servidor salvar em public/workouts/
-    const formData = new FormData();
-    formData.append('file', this.arquivoImagem);
+    const treinoDTO = {
+      titulo: this.workout.title,
+      grupoMuscular: this.workout.targetMuscles,
+      descricao: this.workout.description,
+      instrutorId: usuario.id,
+      itens: this.workout.exercises.map(ex => ({
+        exercicioId: ex.exercicioId,
+        series: ex.sets,
+        repeticoes: ex.reps,
+      })),
+    };
 
-    this.http.post<any>('/api/upload-workout-image', formData).subscribe({
-      next: (response) => {
-        this.caminhoImagem = response.filePath;
-        this.workout.coverImage = this.caminhoImagem;
-
-        console.log('Treino salvo:', this.workout);
-        console.log('Imagem de capa salva em: public/workouts/' + response.nomeArquivo);
-
+    this.http.post<any>(`${this.apiUrl}/treinos`, treinoDTO).subscribe({
+      next: () => {
         this.exibirMensagem('sucesso', 'Treino "' + this.workout.title + '" cadastrado com sucesso!');
 
-        // Aguardar 3 segundos antes de limpar (mensagem desaparece em 3 segundos)
         setTimeout(() => {
           this.limparFormulario();
           this.cdr.detectChanges();
         }, 3500);
       },
       error: (error) => {
-        console.error('Erro ao enviar imagem:', error);
-        this.exibirMensagem('erro', 'Erro ao salvar imagem. Tente novamente.');
+        console.error('Erro ao cadastrar treino:', error);
+        this.exibirMensagem('erro', 'Erro ao cadastrar treino. Tente novamente.');
       },
     });
-  }
-
-  onImageSelect(event: Event): void {
-    const input = event.target as HTMLInputElement;
-    if (!input.files || !input.files[0]) return;
-
-    const file = input.files[0];
-    this.arquivoImagem = file;
-    this.nomeImagem = file.name;
-
-    // Criar preview da imagem IMEDIATAMENTE
-    const reader = new FileReader();
-    reader.onload = () => {
-      this.imagemPreview = reader.result as string;
-      this.cdr.detectChanges();
-    };
-    reader.readAsDataURL(file);
   }
 
   limparFormulario(): void {
@@ -223,16 +190,9 @@ export class CadastroTreino {
       title: '',
       description: '',
       targetMuscles: '',
-      recommendedGender: '',
-      objective: '',
-      coverImage: '',
       exercises: [],
     };
     this.expandedCards = [];
-    this.nomeImagem = '';
-    this.imagemPreview = null;
-    this.caminhoImagem = '';
-    this.arquivoImagem = null;
     this.selectedExercise = '';
     this.reps = 0;
     this.sets = 0;

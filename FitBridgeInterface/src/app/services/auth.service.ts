@@ -15,7 +15,7 @@ export interface Usuario {
   providedIn: 'root'
 })
 export class AuthService {
-  private apiUrl = '/api';
+  private apiUrl = 'http://localhost:8080/api';
   private usuarioLogadoKey = 'usuarioLogado';
   private isBrowser: boolean;
   private usuarioSubject: BehaviorSubject<Usuario | null>;

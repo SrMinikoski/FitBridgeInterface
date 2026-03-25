@@ -1,12 +1,13 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { RouterLink } from '@angular/router';
 import { Navigation } from '../navigation/navigation';
 import { AuthService, Usuario } from '../services/auth.service';
 import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-home-page',
-  imports: [CommonModule, Navigation],
+  imports: [CommonModule, RouterLink, Navigation],
   templateUrl: './home-page.html',
   styleUrl: './home-page.css',
 })

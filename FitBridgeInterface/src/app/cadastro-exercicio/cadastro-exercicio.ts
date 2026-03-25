@@ -17,9 +17,10 @@ interface Mensagem {
   styleUrl: './cadastro-exercicio.css',
 })
 export class CadastroExercicio {
+  private apiUrl = 'http://localhost:8080/api';
+
   nomeImagem: string = '';
   imagemPreview: string | null = null;
-  caminhoImagem: string = '';
   arquivoImagem: File | null = null;
   mensagem: Mensagem = {
     tipo: 'sucesso',
@@ -40,7 +41,6 @@ export class CadastroExercicio {
     this.arquivoImagem = file;
     this.nomeImagem = file.name;
 
-    // Criar preview da imagem IMEDIATAMENTE
     const reader = new FileReader();
     reader.onload = () => {
       this.imagemPreview = reader.result as string;
@@ -60,32 +60,36 @@ export class CadastroExercicio {
       return;
     }
 
-    // Enviar imagem para o servidor salvar em public/exercises/
+    // 1. Upload da imagem via Express SSR (mesma origem)
     const formData = new FormData();
     formData.append('file', this.arquivoImagem);
 
     this.http.post<any>('/api/upload-exercise-image', formData).subscribe({
       next: (response) => {
-        this.caminhoImagem = response.filePath;
-
+        // 2. Cadastrar exercício na API Spring Boot com o caminho da imagem
         const dadosExercicio = {
           nome: form.value.exerciseName,
           descricao: form.value.description,
-          musculoPrincipal: form.value.mainMuscle,
+          musculoAlvo: form.value.mainMuscle,
           musculosAuxiliares: form.value.auxiliaryMuscles,
-          caminhoImagem: this.caminhoImagem,
+          diretorioImagem: response.filePath,
         };
 
-        console.log('Exercício cadastrado:', dadosExercicio);
-        console.log('Imagem salva em: public/exercises/' + response.nomeArquivo);
+        this.http.post<any>(`${this.apiUrl}/exercicios`, dadosExercicio).subscribe({
+          next: () => {
+            this.exibirMensagem('sucesso', 'Exercício cadastrado com sucesso!');
 
-        this.exibirMensagem('sucesso', 'Exercício cadastrado com sucesso!');
-
-        setTimeout(() => {
-          this.limparFormulario();
-          form.resetForm();
-          this.cdr.detectChanges();
-        }, 2000);
+            setTimeout(() => {
+              this.limparFormulario();
+              form.resetForm();
+              this.cdr.detectChanges();
+            }, 2000);
+          },
+          error: (error) => {
+            console.error('Erro ao cadastrar exercício na API:', error);
+            this.exibirMensagem('erro', 'Imagem salva, mas erro ao cadastrar exercício na API.');
+          },
+        });
       },
       error: (error) => {
         console.error('Erro ao enviar imagem:', error);
@@ -113,7 +117,6 @@ export class CadastroExercicio {
   limparFormulario(): void {
     this.nomeImagem = '';
     this.imagemPreview = null;
-    this.caminhoImagem = '';
     this.arquivoImagem = null;
   }
 }

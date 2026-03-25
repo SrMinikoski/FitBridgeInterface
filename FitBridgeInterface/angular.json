@@ -75,8 +75,7 @@
               "buildTarget": "FitBridgeInterface:build:production"
             },
             "development": {
-              "buildTarget": "FitBridgeInterface:build:development",
-              "proxyConfig": "proxy.conf.json"
+              "buildTarget": "FitBridgeInterface:build:development"
             }
           },
           "defaultConfiguration": "development"

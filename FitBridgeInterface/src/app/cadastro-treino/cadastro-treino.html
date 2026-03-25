@@ -7,11 +7,7 @@
       <label for="exercise-select">Exercício:</label>
       <select id="exercise-select" [(ngModel)]="selectedExercise" class="form-input">
         <option value="">Selecione um exercício</option>
-        <option value="1">Supino Reto</option>
-        <option value="2">Rosca Direta</option>
-        <option value="3">Flexão de Pernas</option>
-        <option value="4">Desenvolvimento com Haltere</option>
-        <option value="5">Puxada na Frente</option>
+        <option *ngFor="let ex of exerciciosDisponiveis" [value]="ex.id">{{ ex.nome }}</option>
       </select>
     </div>
 
@@ -131,47 +127,6 @@
       <input id="muscles-input" type="text" [(ngModel)]="workout.targetMuscles" class="form-input"
         placeholder="Ex: Peito, Tríceps, Ombros" />
     </div>
-
-    <div class="form-group">
-      <label for="gender-input">Gênero Recomendado:</label>
-      <select id="gender-input" [(ngModel)]="workout.recommendedGender" class="form-input">
-        <option value="">Selecione</option>
-        <option value="Masculino">Masculino</option>
-        <option value="Feminino">Feminino</option>
-        <option value="Todos">Todos</option>
-      </select>
-    </div>
-
-    <div class="form-group">
-      <label for="objective-input">Objetivo do Treino:</label>
-      <select id="objective-input" [(ngModel)]="workout.objective" class="form-input">
-        <option value="">Selecione</option>
-        <option value="Ganho de Massa Muscular">Ganho de Massa Muscular</option>
-        <option value="Perda de Peso">Perda de Peso</option>
-        <option value="Força">Força</option>
-        <option value="Resistência">Resistência</option>
-        <option value="Definição">Definição</option>
-      </select>
-    </div>
-
-    <!-- Seção de Imagem de Capa -->
-    <fieldset class="form-section">
-      <legend>Imagem de Capa do Treino</legend>
-
-      <div class="form-group">
-        <label for="workoutImage" class="form-label">Selecionar imagem de capa:</label>
-        <div class="file-input-wrapper">
-          <input type="file" id="workoutImage" name="workoutImage" accept="image/*" (change)="onImageSelect($event)" required>
-          <label for="workoutImage" class="file-label">Escolher arquivo</label>
-        </div>
-        <p class="file-name" *ngIf="nomeImagem">{{ nomeImagem }}</p>
-      </div>
-
-      <div class="image-preview" *ngIf="imagemPreview">
-        <img [src]="imagemPreview" alt="Preview da imagem de capa" class="preview-img">
-        <p class="preview-label">Preview da imagem</p>
-      </div>
-    </fieldset>
 
     <button (click)="saveWorkout()" class="save-btn">Salvar Treino</button>
   </div>
