@@ -1,0 +1,200 @@
+* {
+  font-family: Arial, Helvetica, sans-serif;
+  list-style: none;
+  box-sizing: border-box;
+  text-decoration: none;
+}
+
+.content {
+  background-color: #E8D2B3;
+  width: 90%;
+  max-width: 1200px;
+  padding: 20px;
+  border-radius: 20px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  margin: 20px auto;
+  text-align: center;
+}
+
+.content h1 {
+  margin-bottom: 30px;
+  font-size: 28px;
+  color: #333;
+}
+
+.carregando,
+.erro,
+.vazio {
+  padding: 40px;
+  text-align: center;
+  font-size: 16px;
+}
+
+.carregando {
+  color: #666;
+}
+
+.erro {
+  color: #E0332B;
+  background-color: #ffcccc;
+  border-radius: 10px;
+  padding: 20px;
+}
+
+.vazio {
+  color: #666;
+}
+
+.exercicios-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 20px;
+  width: 100%;
+}
+
+.exercise-card {
+  background-color: #fff;
+  border-radius: 15px;
+  overflow: hidden;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  transition: transform 300ms ease-in-out, box-shadow 300ms ease-in-out;
+  display: flex;
+  flex-direction: column;
+}
+
+.exercise-card:hover {
+  transform: translateY(-10px);
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
+}
+
+.card-image-container {
+  width: 100%;
+  height: 200px;
+  overflow: hidden;
+  background-color: #f0f0f0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.card-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.card-image-placeholder {
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(135deg, #E8D2B3, #d4b89e);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.registro-antigo {
+  color: #666;
+  font-size: 16px;
+  font-weight: bold;
+  text-align: center;
+  padding: 10px;
+}
+
+.card-content {
+  padding: 20px;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.card-content h2 {
+  margin: 0 0 15px 0;
+  font-size: 18px;
+  color: #333;
+  word-wrap: break-word;
+}
+
+.card-info {
+  background-color: #f5f5f5;
+  padding: 12px;
+  border-radius: 8px;
+  margin-bottom: 15px;
+  text-align: left;
+}
+
+.card-info p {
+  margin: 6px 0;
+  font-size: 14px;
+  color: #555;
+}
+
+.card-info strong {
+  color: #8F3A33;
+}
+
+.card-description {
+  flex: 1;
+  overflow: hidden;
+  text-align: left;
+}
+
+.card-description p {
+  font-size: 14px;
+  color: #666;
+  line-height: 1.5;
+  margin: 0;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Responsividade */
+@media (max-width: 768px) {
+  .content {
+    width: 95%;
+    padding: 15px;
+  }
+
+  .exercicios-grid {
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 15px;
+  }
+
+  .content h1 {
+    font-size: 22px;
+    margin-bottom: 20px;
+  }
+}
+
+@media (max-width: 480px) {
+  .content {
+    width: 100%;
+    padding: 10px;
+  }
+
+  .exercicios-grid {
+    grid-template-columns: 1fr;
+    gap: 10px;
+  }
+
+  .content h1 {
+    font-size: 18px;
+    margin-bottom: 15px;
+  }
+
+  .card-image-container {
+    height: 150px;
+  }
+
+  .card-content {
+    padding: 15px;
+  }
+
+  .card-content h2 {
+    font-size: 16px;
+  }
+}

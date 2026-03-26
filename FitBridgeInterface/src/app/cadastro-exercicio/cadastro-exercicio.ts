@@ -17,7 +17,7 @@ interface Mensagem {
   styleUrl: './cadastro-exercicio.css',
 })
 export class CadastroExercicio {
-  private apiUrl = 'http://localhost:8080/api';
+  private apiUrl = '/api';
 
   nomeImagem: string = '';
   imagemPreview: string | null = null;
@@ -64,8 +64,9 @@ export class CadastroExercicio {
     const formData = new FormData();
     formData.append('file', this.arquivoImagem);
 
-    this.http.post<any>(`${this.apiUrl}/upload-exercise-image`, formData).subscribe({
+    this.http.post<any>(`${this.apiUrl}/exercicios/upload-exercise-image`, formData).subscribe({
       next: (response) => {
+        console.log('Resposta do upload:', response);
         // 2. Cadastrar exercício na API Spring Boot com o caminho da imagem
         const dadosExercicio = {
           nome: form.value.exerciseName,
@@ -74,6 +75,8 @@ export class CadastroExercicio {
           musculosAuxiliares: form.value.auxiliaryMuscles,
           diretorioImagem: response.filePath,
         };
+        
+        console.log('Enviando dados do exercício:', dadosExercicio);
 
         this.http.post<any>(`${this.apiUrl}/exercicios`, dadosExercicio).subscribe({
           next: () => {
@@ -87,6 +90,7 @@ export class CadastroExercicio {
           },
           error: (error) => {
             console.error('Erro ao cadastrar exercício na API:', error);
+            console.error('Resposta do erro:', error.error);
             this.exibirMensagem('erro', 'Imagem salva, mas erro ao cadastrar exercício na API.');
           },
         });

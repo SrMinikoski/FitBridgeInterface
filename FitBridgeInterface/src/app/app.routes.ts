@@ -6,6 +6,7 @@ import { CadstroUser } from './cadstro-user/cadstro-user';
 import { CadastroExercicio } from './cadastro-exercicio/cadastro-exercicio';
 import { CadastroTreino } from './cadastro-treino/cadastro-treino';
 import { ListaTreinos } from './lista-treinos/lista-treinos';
+import { ListaExercicios } from './lista-exercicios/lista-exercicios';
 import { Login } from './login/login';
 import { AuthGuard } from './services/auth.guard';
 
@@ -26,6 +27,11 @@ export const routes: Routes = [
   {
     path: 'workout',
     component: Workoutpage,
+  },
+  {
+    path: 'exercicios',
+    component: ListaExercicios,
+    canActivate: [AuthGuard],
   },
   {
     path: 'treinos',

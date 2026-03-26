@@ -1,0 +1,46 @@
+<app-navigation></app-navigation>
+
+<div class="content">
+  <h1>Exercícios Cadastrados</h1>
+  
+  <div *ngIf="carregando" class="carregando">
+    <p>Carregando exercícios...</p>
+  </div>
+
+  <div *ngIf="erro" class="erro">
+    <p>{{ erro }}</p>
+  </div>
+
+  <div *ngIf="!carregando && exercicios.length === 0 && !erro" class="vazio">
+    <p>Nenhum exercício cadastrado.</p>
+  </div>
+
+  <div class="exercicios-grid">
+    <div *ngFor="let exercicio of exercicios" class="exercise-card">
+      <div class="card-image-container">
+        <img
+          *ngIf="temImagem(exercicio)"
+          [src]="obterUrlImagem(exercicio)"
+          [alt]="exercicio.nome"
+          class="card-image"
+        />
+        <div *ngIf="!temImagem(exercicio)" class="card-image-placeholder">
+          <p class="registro-antigo">Registro antigo</p>
+        </div>
+      </div>
+
+      <div class="card-content">
+        <h2>{{ exercicio.nome }}</h2>
+        <div class="card-info">
+          <p><strong>Músculo alvo:</strong> {{ exercicio.musculoAlvo }}</p>
+          <p *ngIf="exercicio.musculosAuxiliares">
+            <strong>Músculos auxiliares:</strong> {{ exercicio.musculosAuxiliares }}
+          </p>
+        </div>
+        <div class="card-description">
+          <p>{{ exercicio.descricao }}</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
