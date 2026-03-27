@@ -27,11 +27,13 @@
           name="senha"
           placeholder="Digite sua senha"
           [disabled]="carregando"
+          [class.input-erro]="erroVisivel"
         />
       </div>
 
-      <div *ngIf="erro" class="erro-mensagem">
-        {{ erro }}
+      <div *ngIf="erro" class="erro-mensagem" [class.erro-visivel]="erroVisivel" [class.erro-saindo]="!erroVisivel">
+        <span class="erro-icone">⚠️</span>
+        <span>{{ erro }}</span>
       </div>
 
       <button type="submit" class="btn-login" [disabled]="carregando">

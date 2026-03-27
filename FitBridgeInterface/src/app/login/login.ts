@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
@@ -16,8 +16,13 @@ export class Login implements OnInit {
   senha: string = '';
   carregando: boolean = false;
   erro: string = '';
+  erroVisivel: boolean = false;
 
-  constructor(private authService: AuthService, private router: Router) {}
+  constructor(
+    private authService: AuthService,
+    private router: Router,
+    private cdr: ChangeDetectorRef
+  ) {}
 
   ngOnInit(): void {
     // Se já está logado, redireciona para home
@@ -34,24 +39,46 @@ export class Login implements OnInit {
 
     this.carregando = true;
     this.erro = '';
+    this.erroVisivel = false;
 
     this.authService.login(this.email, this.senha).subscribe({
       next: (usuario) => {
         this.carregando = false;
         if (usuario) {
-          // Login bem-sucedido
           this.router.navigate(['/home']);
         } else {
-          // Falha no login
-          this.erro = 'Email ou senha inválidos';
+          this.mostrarErro('Email ou senha inválidos. Verifique suas credenciais.');
         }
+        this.cdr.detectChanges();
       },
       error: (err) => {
         this.carregando = false;
-        this.erro = 'Erro ao conectar com a API';
-        console.error('Login error', err);
+        if (err?.status === 401 || err?.status === 403) {
+          this.mostrarErro('Senha incorreta. Tente novamente.');
+        } else if (err?.status === 404) {
+          this.mostrarErro('Usuário não encontrado. Verifique seu email.');
+        } else if (err?.status === 0 || err?.status === null) {
+          this.mostrarErro('Erro de conexão. Verifique se o servidor está ativo.');
+        } else {
+          this.mostrarErro('Erro ao conectar com o servidor. Tente novamente mais tarde.');
+        }
+        this.cdr.detectChanges();
       }
     });
+  }
+
+  mostrarErro(mensagem: string) {
+    this.erro = mensagem;
+    this.erroVisivel = true;
+    this.cdr.detectChanges();
+    setTimeout(() => {
+      this.erroVisivel = false;
+      this.cdr.detectChanges();
+      setTimeout(() => {
+        this.erro = '';
+        this.cdr.detectChanges();
+      }, 300);
+    }, 5000);
   }
 
   criarConta() {

@@ -1,8 +1,8 @@
 import { Injectable, Inject, PLATFORM_ID } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
-import { Observable, of, BehaviorSubject } from 'rxjs';
-import { map, tap, catchError, timeout } from 'rxjs/operators';
+import { Observable, BehaviorSubject } from 'rxjs';
+import { map, tap, timeout } from 'rxjs/operators';
 
 export interface Usuario {
   id: number;
@@ -44,8 +44,7 @@ export class AuthService {
           }
           this.usuarioSubject.next(usuario);
         }
-      }),
-      catchError(() => of(null))
+      })
     );
   }
 
