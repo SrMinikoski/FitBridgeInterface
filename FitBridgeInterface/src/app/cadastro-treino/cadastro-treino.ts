@@ -1,4 +1,4 @@
-import { Component, ChangeDetectorRef, OnInit } from '@angular/core';
+import { Component, ChangeDetectorRef, OnInit, HostListener } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
@@ -36,6 +36,7 @@ interface Mensagem {
   tipo: 'sucesso' | 'erro';
   texto: string;
   visivel: boolean;
+  saindo: boolean;
 }
 
 @Component({
@@ -52,7 +53,8 @@ export class CadastroTreino implements OnInit {
   editingIndex: number | null = null;
 
   // Form inputs
-  selectedExercise: string = '';
+  exercicioSelecionado: ApiExercicio | null = null;
+  dropdownAberto: boolean = false;
   reps: number = 0;
   sets: number = 0;
   restTime: number = 0;
@@ -67,6 +69,7 @@ export class CadastroTreino implements OnInit {
     tipo: 'sucesso',
     texto: '',
     visivel: false,
+    saindo: false,
   };
 
   // Dados do treino
@@ -88,6 +91,31 @@ export class CadastroTreino implements OnInit {
 
   ngOnInit(): void {
     this.carregarExercicios();
+  }
+
+  @HostListener('document:click')
+  fecharDropdown(): void {
+    this.dropdownAberto = false;
+  }
+
+  toggleDropdown(): void {
+    this.dropdownAberto = !this.dropdownAberto;
+  }
+
+  selecionarExercicio(ex: ApiExercicio): void {
+    this.exercicioSelecionado = ex;
+    this.dropdownAberto = false;
+  }
+
+  getImagemUrl(diretorio: string): string {
+    if (!diretorio) return '';
+    if (diretorio.startsWith('/') || diretorio.startsWith('http')) return diretorio;
+    return '/' + diretorio;
+  }
+
+  onImageError(event: Event): void {
+    const img = event.target as HTMLImageElement;
+    img.style.display = 'none';
   }
 
   carregarExercicios(): void {
@@ -112,32 +140,30 @@ export class CadastroTreino implements OnInit {
   }
 
   addExercise(): void {
-    if (!this.selectedExercise || this.reps <= 0 || this.sets <= 0 || this.restTime <= 0) {
-      alert('Por favor, preencha todos os campos do exercício.');
+    if (!this.exercicioSelecionado || this.reps <= 0 || this.sets <= 0 || this.restTime <= 0) {
+      alert('Por favor, selecione um exercício e preencha todos os campos.');
       return;
     }
 
-    const exercicio = this.exerciciosDisponiveis.find(e => e.id.toString() === this.selectedExercise);
-    if (exercicio) {
-      const newExercise: Exercise = {
-        id: this.workout.exercises.length + 1,
-        exercicioId: exercicio.id,
-        name: exercicio.nome,
-        reps: this.reps,
-        sets: this.sets,
-        rest: this.restTime,
-        image: exercicio.diretorioImagem || '/exercises/biceps_apoiado.avif',
-        description: exercicio.descricao,
-      };
+    const exercicio = this.exercicioSelecionado;
+    const newExercise: Exercise = {
+      id: this.workout.exercises.length + 1,
+      exercicioId: exercicio.id,
+      name: exercicio.nome,
+      reps: this.reps,
+      sets: this.sets,
+      rest: this.restTime,
+      image: this.getImagemUrl(exercicio.diretorioImagem) || '/exercises/biceps_apoiado.avif',
+      description: exercicio.descricao,
+    };
 
-      this.workout.exercises.push(newExercise);
-      this.expandedCards.push(false);
+    this.workout.exercises.push(newExercise);
+    this.expandedCards.push(false);
 
-      this.selectedExercise = '';
-      this.reps = 0;
-      this.sets = 0;
-      this.restTime = 0;
-    }
+    this.exercicioSelecionado = null;
+    this.reps = 0;
+    this.sets = 0;
+    this.restTime = 0;
   }
 
   removeExercise(index: number): void {
@@ -193,22 +219,36 @@ export class CadastroTreino implements OnInit {
       exercises: [],
     };
     this.expandedCards = [];
-    this.selectedExercise = '';
+    this.exercicioSelecionado = null;
+    this.dropdownAberto = false;
     this.reps = 0;
     this.sets = 0;
     this.restTime = 0;
   }
 
   exibirMensagem(tipo: 'sucesso' | 'erro', texto: string): void {
-    this.mensagem = { tipo, texto, visivel: true };
-    // forçar atualização imediata da UI
+    this.mensagem = { tipo, texto, visivel: true, saindo: false };
     this.cdr.detectChanges();
 
-    // Limpar mensagem após 3 segundos
+    setTimeout(() => {
+      this.mensagem.saindo = true;
+      this.cdr.detectChanges();
+      setTimeout(() => {
+        this.mensagem.visivel = false;
+        this.mensagem.saindo = false;
+        this.cdr.detectChanges();
+      }, 400);
+    }, 3500);
+  }
+
+  fecharMensagem(): void {
+    this.mensagem.saindo = true;
+    this.cdr.detectChanges();
     setTimeout(() => {
       this.mensagem.visivel = false;
+      this.mensagem.saindo = false;
       this.cdr.detectChanges();
-    }, 3000);
+    }, 400);
   }
 
   startEdit(index: number): void {

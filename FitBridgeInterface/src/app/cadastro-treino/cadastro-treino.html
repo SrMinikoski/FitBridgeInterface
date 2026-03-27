@@ -4,11 +4,51 @@
   <div class="form-container">
     <h2>Adicionar Exercício ao Treino</h2>
     <div class="form-group">
-      <label for="exercise-select">Exercício:</label>
-      <select id="exercise-select" [(ngModel)]="selectedExercise" class="form-input">
-        <option value="">Selecione um exercício</option>
-        <option *ngFor="let ex of exerciciosDisponiveis" [value]="ex.id">{{ ex.nome }}</option>
-      </select>
+      <label>Exercício:</label>
+      <div class="exercise-dropdown" (click)="$event.stopPropagation()">
+        <div
+          class="dropdown-trigger"
+          [class.dropdown-open]="dropdownAberto"
+          (click)="toggleDropdown()"
+        >
+          <ng-container *ngIf="exercicioSelecionado; else semSelecao">
+            <img
+              class="dropdown-thumb"
+              [src]="getImagemUrl(exercicioSelecionado.diretorioImagem)"
+              [alt]="exercicioSelecionado.nome"
+              (error)="onImageError($event)"
+            />
+            <span class="dropdown-selected-name">{{ exercicioSelecionado.nome }}</span>
+          </ng-container>
+          <ng-template #semSelecao>
+            <span class="dropdown-placeholder">Selecione um exercício</span>
+          </ng-template>
+          <span class="dropdown-arrow">▾</span>
+        </div>
+
+        <div class="dropdown-list" *ngIf="dropdownAberto">
+          <div
+            *ngFor="let ex of exerciciosDisponiveis"
+            class="dropdown-item"
+            [class.item-selected]="exercicioSelecionado?.id === ex.id"
+            (click)="selecionarExercicio(ex)"
+          >
+            <img
+              class="dropdown-thumb"
+              [src]="getImagemUrl(ex.diretorioImagem)"
+              [alt]="ex.nome"
+              (error)="onImageError($event)"
+            />
+            <div class="dropdown-item-info">
+              <span class="dropdown-item-nome">{{ ex.nome }}</span>
+              <span class="dropdown-item-musculo">{{ ex.musculoAlvo }}</span>
+            </div>
+          </div>
+          <div *ngIf="exerciciosDisponiveis.length === 0" class="dropdown-empty">
+            Nenhum exercício disponível
+          </div>
+        </div>
+      </div>
     </div>
 
     <div class="form-group">
@@ -102,15 +142,6 @@
   <div class="workout-details">
     <h2>Detalhes do Treino</h2>
 
-    <!-- Mensagem de Sucesso/Erro -->
-    <div *ngIf="mensagem.visivel" [ngClass]="['mensagem', mensagem.tipo]">
-      <div class="mensagem-conteudo">
-        <span *ngIf="mensagem.tipo === 'sucesso'" class="icone-sucesso">✓</span>
-        <span *ngIf="mensagem.tipo === 'erro'" class="icone-erro">✕</span>
-        <p>{{ mensagem.texto }}</p>
-      </div>
-    </div>
-
     <div class="form-group">
       <label for="title-input">Título do Treino:</label>
       <input id="title-input" type="text" [(ngModel)]="workout.title" class="form-input" placeholder="Ex: Treino de Peito e Tríceps" />
@@ -137,4 +168,18 @@
         d="M264-216h96v-240h240v240h96v-348L480-726 264-564v348Zm-72 72v-456l288-216 288 216v456H528v-240h-96v240H192Zm288-327Z" />
     </svg>
   </a>
+</div>
+
+<!-- Toast popup fixo no canto da tela -->
+<div
+  *ngIf="mensagem.visivel"
+  class="toast-popup"
+  [class.toast-sucesso]="mensagem.tipo === 'sucesso'"
+  [class.toast-erro]="mensagem.tipo === 'erro'"
+  [class.toast-saindo]="mensagem.saindo"
+  (click)="fecharMensagem()"
+>
+  <span class="toast-icone">{{ mensagem.tipo === 'sucesso' ? '✔️' : '❌' }}</span>
+  <span class="toast-texto">{{ mensagem.texto }}</span>
+  <button class="toast-fechar" (click)="fecharMensagem()">×</button>
 </div>

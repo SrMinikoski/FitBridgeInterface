@@ -626,3 +626,235 @@ h2 {
     box-shadow: none;
   }
 }
+
+/* ─── Dropdown customizado de exercícios ──────────────────────────────── */
+.exercise-dropdown {
+  position: relative;
+  width: 100%;
+  user-select: none;
+}
+
+.dropdown-trigger {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 12px;
+  border: 2px solid #E0332B;
+  border-radius: 10px;
+  background-color: #ffffff;
+  cursor: pointer;
+  min-height: 52px;
+  transition: border-color 200ms, box-shadow 200ms;
+}
+
+.dropdown-trigger:hover,
+.dropdown-trigger.dropdown-open {
+  border-color: #8F3A33;
+  box-shadow: 0 0 5px rgba(224, 51, 43, 0.3);
+}
+
+.dropdown-placeholder {
+  flex: 1;
+  color: #aaa;
+  font-size: 14px;
+}
+
+.dropdown-selected-name {
+  flex: 1;
+  font-size: 14px;
+  color: #333;
+  font-weight: 600;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.dropdown-arrow {
+  margin-left: auto;
+  color: #E0332B;
+  font-size: 16px;
+  transition: transform 200ms;
+  flex-shrink: 0;
+}
+
+.dropdown-trigger.dropdown-open .dropdown-arrow {
+  transform: rotate(180deg);
+}
+
+.dropdown-thumb {
+  width: 44px;
+  height: 44px;
+  object-fit: cover;
+  border-radius: 8px;
+  background-color: #f5e3d0;
+  flex-shrink: 0;
+}
+
+.dropdown-list {
+  position: absolute;
+  top: calc(100% + 4px);
+  left: 0;
+  right: 0;
+  background: #fff;
+  border: 2px solid #E0332B;
+  border-radius: 10px;
+  max-height: 260px;
+  overflow-y: auto;
+  z-index: 200;
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
+}
+
+.dropdown-list::-webkit-scrollbar {
+  width: 6px;
+}
+
+.dropdown-list::-webkit-scrollbar-track {
+  background: #f9efe1;
+  border-radius: 10px;
+}
+
+.dropdown-list::-webkit-scrollbar-thumb {
+  background: #E0332B;
+  border-radius: 10px;
+}
+
+.dropdown-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 12px;
+  cursor: pointer;
+  transition: background-color 150ms;
+  border-bottom: 1px solid #f5e3d0;
+}
+
+.dropdown-item:last-child {
+  border-bottom: none;
+}
+
+.dropdown-item:hover {
+  background-color: #fce8e7;
+}
+
+.dropdown-item.item-selected {
+  background-color: #f8d7da;
+}
+
+.dropdown-item-info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.dropdown-item-nome {
+  font-size: 14px;
+  font-weight: 600;
+  color: #333;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.dropdown-item-musculo {
+  font-size: 11px;
+  color: #8F3A33;
+  opacity: 0.8;
+}
+
+.dropdown-item.item-selected .dropdown-item-nome {
+  color: #E0332B;
+}
+
+.dropdown-empty {
+  padding: 16px;
+  text-align: center;
+  color: #8F3A33;
+  font-size: 13px;
+  opacity: 0.7;
+}
+
+/* ─── Toast popup ──────────────────────────────────────────────────────── */
+.toast-popup {
+  position: fixed;
+  bottom: 28px;
+  right: 28px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 16px 20px;
+  border-radius: 14px;
+  min-width: 280px;
+  max-width: 400px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.18);
+  cursor: pointer;
+  z-index: 1000;
+  animation: toastEntrar 0.35s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+}
+
+.toast-popup.toast-saindo {
+  animation: toastSair 0.35s ease-in both;
+}
+
+.toast-sucesso {
+  background-color: #edfbee;
+  border: 2px solid #28a745;
+  color: #155724;
+}
+
+.toast-erro {
+  background-color: #fff2f0;
+  border: 2px solid #E0332B;
+  color: #7a1212;
+}
+
+.toast-icone {
+  font-size: 22px;
+  flex-shrink: 0;
+}
+
+.toast-texto {
+  font-size: 14px;
+  font-weight: 600;
+  flex: 1;
+  line-height: 1.4;
+}
+
+.toast-fechar {
+  background: none;
+  border: none;
+  font-size: 20px;
+  line-height: 1;
+  cursor: pointer;
+  color: inherit;
+  opacity: 0.6;
+  padding: 0 2px;
+  flex-shrink: 0;
+  transition: opacity 150ms;
+}
+
+.toast-fechar:hover {
+  opacity: 1;
+}
+
+@keyframes toastEntrar {
+  from {
+    opacity: 0;
+    transform: translateY(30px) scale(0.92);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes toastSair {
+  from {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+  to {
+    opacity: 0;
+    transform: translateY(30px) scale(0.92);
+  }
+}
