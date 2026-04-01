@@ -17,7 +17,7 @@ interface Mensagem {
   styleUrl: './cadastro-exercicio.css',
 })
 export class CadastroExercicio {
-  private apiUrl = '/api';
+  private apiUrl = 'https://fitbridge-exv.onrender.com/api';
 
   nomeImagem: string = '';
   imagemPreview: string | null = null;
@@ -60,11 +60,11 @@ export class CadastroExercicio {
       return;
     }
 
-    // 1. Upload da imagem via Express SSR (mesma origem)
+    // 1. Upload da imagem via Express SSR (mesma origem, rota local)
     const formData = new FormData();
     formData.append('file', this.arquivoImagem);
 
-    this.http.post<any>(`${this.apiUrl}/upload-exercise-image`, formData).subscribe({
+    this.http.post<any>('/api/upload-exercise-image', formData).subscribe({
       next: (response) => {
         console.log('Resposta do upload:', response);
         // 2. Cadastrar exercício na API Spring Boot com o caminho da imagem

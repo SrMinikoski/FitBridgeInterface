@@ -47,7 +47,7 @@ interface Mensagem {
   styleUrl: './cadastro-treino.css',
 })
 export class CadastroTreino implements OnInit {
-  private apiUrl = 'http://localhost:8080/api';
+  private apiUrl = 'https://fitbridge-exv.onrender.com/api';
 
   expandedCards: boolean[] = [];
   editingIndex: number | null = null;

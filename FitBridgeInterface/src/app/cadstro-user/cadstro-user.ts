@@ -29,7 +29,7 @@ export class CadstroUser {
   formacao = '';
   cref = '';
 
-  private apiUrl = 'http://localhost:8080/api';
+  private apiUrl = 'https://fitbridge-exv.onrender.com/api';
 
   constructor(private http: HttpClient, private router: Router) {}
 

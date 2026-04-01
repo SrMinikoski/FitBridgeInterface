@@ -95,6 +95,12 @@ app.post('/api/upload-workout-image', uploadWorkout.single('file'), (req, res) =
 });
 
 /**
+ * Serve uploaded files from the project's public/ folder (exercises, workouts, etc.)
+ * This allows runtime-uploaded images to be served correctly.
+ */
+app.use(express.static(join(projectRoot, 'public')));
+
+/**
  * Serve static files from /browser
  */
 app.use(

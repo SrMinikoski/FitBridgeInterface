@@ -43,7 +43,7 @@ export class ListaExercicios implements OnInit {
 
   carregarExercicios(): void {
     console.log('Fazendo requisição para /api/exercicios');
-    this.http.get<Exercicio[]>('/api/exercicios').subscribe({
+    this.http.get<Exercicio[]>('https://fitbridge-exv.onrender.com/api/exercicios').subscribe({
       next: (dados) => {
         console.log('Dados recebidos:', dados);
         this.exercicios = dados;
