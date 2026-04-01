@@ -1,4 +1,4 @@
-import { Component, ChangeDetectorRef, OnInit, HostListener } from '@angular/core';
+import { Component, ChangeDetectorRef, NgZone, OnInit, HostListener } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
@@ -80,17 +80,40 @@ export class CadastroTreino implements OnInit {
     exercises: [],
   };
 
+  // Imagem do Treino
+  nomeImagem: string = '';
+  imagemPreview: string | null = null;
+  arquivoImagem: File | null = null;
+
   // Exercícios carregados da API
   exerciciosDisponiveis: ApiExercicio[] = [];
 
   constructor(
     private cdr: ChangeDetectorRef,
+    private ngZone: NgZone,
     private http: HttpClient,
     private authService: AuthService
   ) {}
 
   ngOnInit(): void {
     this.carregarExercicios();
+  }
+
+  onImageSelect(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    if (!input.files || !input.files[0]) return;
+
+    const file = input.files[0];
+    this.arquivoImagem = file;
+    this.nomeImagem = file.name;
+
+    const reader = new FileReader();
+    reader.onload = () => {
+      this.ngZone.run(() => {
+        this.imagemPreview = reader.result as string;
+      });
+    };
+    reader.readAsDataURL(file);
   }
 
   @HostListener('document:click')
@@ -177,36 +200,53 @@ export class CadastroTreino implements OnInit {
       return;
     }
 
+    if (!this.arquivoImagem) {
+      this.exibirMensagem('erro', 'Selecione uma imagem para o treino.');
+      return;
+    }
+
     const usuario = this.authService.getUsuarioLogado();
     if (!usuario) {
       this.exibirMensagem('erro', 'Usuário não está logado.');
       return;
     }
 
-    const treinoDTO = {
-      titulo: this.workout.title,
-      grupoMuscular: this.workout.targetMuscles,
-      descricao: this.workout.description,
-      instrutorId: usuario.id,
-      itens: this.workout.exercises.map(ex => ({
-        exercicioId: ex.exercicioId,
-        series: ex.sets,
-        repeticoes: ex.reps,
-      })),
-    };
+    const formData = new FormData();
+    formData.append('file', this.arquivoImagem);
 
-    this.http.post<any>(`${this.apiUrl}/treinos`, treinoDTO).subscribe({
-      next: () => {
-        this.exibirMensagem('sucesso', 'Treino "' + this.workout.title + '" cadastrado com sucesso!');
+    this.http.post<any>('/api/upload-workout-image', formData).subscribe({
+      next: (response) => {
+        const treinoDTO = {
+          titulo: this.workout.title,
+          grupoMuscular: this.workout.targetMuscles,
+          descricao: this.workout.description,
+          diretorioImagem: response.filePath,
+          instrutorId: usuario.id,
+          itens: this.workout.exercises.map(ex => ({
+            exercicioId: ex.exercicioId,
+            series: ex.sets,
+            repeticoes: ex.reps,
+          })),
+        };
 
-        setTimeout(() => {
-          this.limparFormulario();
-          this.cdr.detectChanges();
-        }, 3500);
+        this.http.post<any>(`${this.apiUrl}/treinos`, treinoDTO).subscribe({
+          next: () => {
+            this.exibirMensagem('sucesso', 'Treino "' + this.workout.title + '" cadastrado com sucesso!');
+
+            setTimeout(() => {
+              this.limparFormulario();
+              this.cdr.detectChanges();
+            }, 3500);
+          },
+          error: (error) => {
+            console.error('Erro ao cadastrar treino:', error);
+            this.exibirMensagem('erro', 'Imagem salva, mas erro ao cadastrar treino na API.');
+          },
+        });
       },
       error: (error) => {
-        console.error('Erro ao cadastrar treino:', error);
-        this.exibirMensagem('erro', 'Erro ao cadastrar treino. Tente novamente.');
+        console.error('Erro ao enviar imagem:', error);
+        this.exibirMensagem('erro', 'Erro ao salvar imagem. Tente novamente.');
       },
     });
   }
@@ -224,6 +264,9 @@ export class CadastroTreino implements OnInit {
     this.reps = 0;
     this.sets = 0;
     this.restTime = 0;
+    this.nomeImagem = '';
+    this.imagemPreview = null;
+    this.arquivoImagem = null;
   }
 
   exibirMensagem(tipo: 'sucesso' | 'erro', texto: string): void {

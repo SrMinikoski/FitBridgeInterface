@@ -139,6 +139,25 @@
   </div>
 
 
+  <div class="workout-image-section">
+    <h2>Imagem do Treino</h2>
+
+    <div class="form-group">
+      <label for="workoutImage">Selecionar imagem:</label>
+      <div class="file-input-wrapper">
+        <input type="file" id="workoutImage" name="workoutImage" accept="image/*" (change)="onImageSelect($event)">
+        <span class="file-label">Escolher arquivo</span>
+      </div>
+      <p class="file-name" *ngIf="nomeImagem">{{ nomeImagem }}</p>
+      <p class="file-info">Formatos aceitos: JPG, PNG, AVIF</p>
+    </div>
+
+    <div class="image-preview">
+      <img *ngIf="imagemPreview" [src]="imagemPreview" alt="Preview do treino">
+      <p class="preview-text" *ngIf="!imagemPreview">Imagem será exibida aqui</p>
+    </div>
+  </div>
+
   <div class="workout-details">
     <h2>Detalhes do Treino</h2>
 
