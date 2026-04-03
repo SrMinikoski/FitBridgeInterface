@@ -1,46 +1,70 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy, signal } from '@angular/core';
+import { CommonModule } from '@angular/common';
 import { ActivatedRoute } from '@angular/router';
 import { Navigation } from '../navigation/navigation';
+import { TreinoService, Treino, TreinoItem } from '../services/treino.service';
+import { Subject } from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
 
 @Component({
   selector: 'app-workoutpage',
-  imports: [Navigation],
+  standalone: true,
+  imports: [CommonModule, Navigation],
   templateUrl: './workoutpage.html',
   styleUrl: './workoutpage.css',
 })
-export class Workoutpage implements OnInit {
-  expandedCards: boolean[] = [false, false, false];
-  treinoId: number | null = null;
+export class Workoutpage implements OnInit, OnDestroy {
+  treino = signal<Treino | null>(null);
+  carregando = signal(true);
+  erro = signal<string | null>(null);
+  expandedCards: boolean[] = [];
 
-  constructor(private route: ActivatedRoute) {}
+  private destroy$ = new Subject<void>();
+
+  constructor(
+    private route: ActivatedRoute,
+    private treinoService: TreinoService
+  ) {}
 
   ngOnInit(): void {
-    // Captura o ID do treino da query parameter
-    this.route.queryParams.subscribe(params => {
-      if (params['id']) {
-        this.treinoId = parseInt(params['id'], 10);
-        console.log('Treino ID capturado:', this.treinoId);
-        // TODO: Carregar dados do treino específico com base no ID
-        this.carregarTreinoPorId(this.treinoId);
-      }
-    });
+    this.route.queryParams
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(params => {
+        if (params['id']) {
+          this.carregarTreino(parseInt(params['id'], 10));
+        }
+      });
   }
 
-  /**
-   * Carrega os dados do treino específico pela API
-   * TODO: Implementar chamada à API quando disponível
-   */
-  carregarTreinoPorId(id: number): void {
-    console.log('Carregando treino com ID:', id);
-    // Implementação futura para carregar dados reais do treino
-    // this.treinoService.obterTreinoPorId(id).subscribe(
-    //   (treino) => {
-    //     this.atualizarTreino(treino);
-    //   },
-    //   (error) => {
-    //     console.error('Erro ao carregar treino:', error);
-    //   }
-    // );
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
+  }
+
+  carregarTreino(id: number): void {
+    this.carregando.set(true);
+    this.erro.set(null);
+    this.treinoService.obterTreinoPorId(id)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: (treino: Treino) => {
+          this.treino.set(treino);
+          this.expandedCards = (treino.itens || []).map(() => false);
+          this.carregando.set(false);
+        },
+        error: (error) => {
+          console.error('Erro ao carregar treino:', error);
+          this.erro.set('Erro ao carregar treino. Tente novamente.');
+          this.carregando.set(false);
+        }
+      });
+  }
+
+  obterImagemExercicio(item: TreinoItem): string {
+    if (item.exercicio?.diretorioImagem) {
+      return '/' + item.exercicio.diretorioImagem;
+    }
+    return '/exercises/biceps_apoiado.avif';
   }
 
   toggleCard(index: number, event: Event): void {
@@ -48,31 +72,29 @@ export class Workoutpage implements OnInit {
     this.expandedCards[index] = !this.expandedCards[index];
   }
 
-  // Prepare a print-ready version (expand all), ask user to save, and download PDF if confirmed
+  isCardExpanded(index: number): boolean {
+    return this.expandedCards[index] ?? false;
+  }
+
   prepareAndMaybeSavePdf(): void {
     const previousState = [...this.expandedCards];
-    // expand all
     this.expandedCards = this.expandedCards.map(() => true);
 
-    // wait for CSS animation to finish (match transition time ~450ms)
     setTimeout(() => {
       const wantsToSave = window.confirm('Versão para impressão gerada. Deseja salvar o treino em seu dispositivo?');
       if (wantsToSave) {
         this.downloadPdf().then(() => {
-          // restore previous expanded state
           this.expandedCards = previousState;
         }).catch(() => {
           this.expandedCards = previousState;
         });
       } else {
-        // restore if user cancels
         this.expandedCards = previousState;
       }
     }, 500);
   }
 
   async downloadPdf(): Promise<void> {
-    // Ensure html2pdf is available
     const html2pdfLib = (window as any).html2pdf;
     if (!html2pdfLib) {
       alert('Biblioteca html2pdf não encontrada. Verifique se o script foi carregado.');
@@ -85,15 +107,17 @@ export class Workoutpage implements OnInit {
       return;
     }
 
+    const treino = this.treino();
+    const filename = treino ? treino.titulo.replace(/[^a-zA-Z0-9]/g, '_') + '.pdf' : 'treino.pdf';
+
     const opt = {
-      margin:       10,
-      filename:     'treino.pdf',
-      image:        { type: 'jpeg', quality: 0.98 },
-      html2canvas:  { scale: 2, useCORS: true },
-      jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
+      margin: 10,
+      filename,
+      image: { type: 'jpeg', quality: 0.98 },
+      html2canvas: { scale: 2, useCORS: true },
+      jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
     };
 
-    // hide the PDF button and all checkboxes so they don't appear in the generated PDF
     const pdfBtn = document.getElementById('pdf') as HTMLElement | null;
     const prevPdfDisplay = pdfBtn ? pdfBtn.style.display : null;
     if (pdfBtn) pdfBtn.style.display = 'none';
@@ -105,7 +129,6 @@ export class Workoutpage implements OnInit {
     return new Promise((resolve, reject) => {
       try {
         (window as any).html2pdf().set(opt).from(element).save().then(() => {
-          // restore pdf button and inputs
           if (pdfBtn) pdfBtn.style.display = prevPdfDisplay || '';
           inputs.forEach((i, idx) => i.style.display = prevDisplays[idx] || '');
           resolve();
@@ -120,9 +143,5 @@ export class Workoutpage implements OnInit {
         reject(err);
       }
     });
-  }
-
-  isCardExpanded(index: number): boolean {
-    return this.expandedCards[index];
   }
 }

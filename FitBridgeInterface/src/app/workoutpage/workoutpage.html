@@ -1,96 +1,66 @@
 <div class="content">
-    <h1>Nome do Treino</h1>
-    <span id="explicacao">Clique na imagem do exercício para obter uma descrição detalhada</span>
 
-
-    <div class="card" [class.expanded]="isCardExpanded(0)">
-        <div class="information">
-            <input type="checkbox" class="exercise-toggle" [checked]="isCardExpanded(0)"
-                (change)="toggleCard(0, $event)" aria-label="Expandir descrição do exercício"
-                style="background-image: url('/exercises/biceps_apoiado.avif');">
-            <h2>Nome do exercício</h2>
-            <img src="icones/reps.png" alt="Repetições" class="reps">
-            <p id="reps">10x</p>
-            <img src="icones/sets.png" alt="Séries" class="sets">
-            <p id="sets">10x</p>
-            <img src="icones/rest.png" alt="Descanso" class="rest">
-            <p id="rest">45s</p>
-            <input type="checkbox" name="ExerciseDone" class="ExerciseDone">
-        </div>
-        <div class="description" [class.visible]="isCardExpanded(0)">
-            <h3>Descrição do exercício</h3>
-            <span>Lorem ipsum dolor sit amet consectetur adipisicing elit. Voluptas, doloremque. Doloribus, voluptate.
-                Voluptas, doloremque. Doloribus, voluptate. Voluptas, doloremque. Doloribus, voluptate. Voluptas,
-                doloremque. Doloribus, voluptate. Voluptas, doloremque. Doloribus,</span>
-        </div>
+    <!-- Carregando -->
+    <div *ngIf="carregando()" class="carregando">
+        <div class="spinner"></div>
+        <p>Carregando treino...</p>
     </div>
 
-
-    <div class="card" [class.expanded]="isCardExpanded(1)">
-        <div class="information">
-            <input type="checkbox" class="exercise-toggle" [checked]="isCardExpanded(1)"
-                (change)="toggleCard(1, $event)" aria-label="Expandir descrição do exercício"
-                style="background-image: url('/exercises/biceps_apoiado.avif');">
-            <h2>Nome do exercício</h2>
-            <img src="icones/reps.png" alt="Repetições" class="reps">
-            <p id="reps">10x</p>
-            <img src="icones/sets.png" alt="Séries" class="sets">
-            <p id="sets">10x</p>
-            <img src="icones/rest.png" alt="Descanso" class="rest">
-            <p id="rest">45s</p>
-            <input type="checkbox" name="ExerciseDone" class="ExerciseDone">
-        </div>
-        <div class="description" [class.visible]="isCardExpanded(1)">
-            <h3>Descrição do exercício</h3>
-            <span>Lorem ipsum dolor sit amet consectetur adipisicing elit. Voluptas, doloremque. Doloribus, voluptate.
-                Voluptas, doloremque. Doloribus, voluptate. Voluptas, doloremque. Doloribus, voluptate. Voluptas,
-                doloremque. Doloribus, voluptate. Voluptas, doloremque. Doloribus,</span>
-        </div>
+    <!-- Erro -->
+    <div *ngIf="erro()" class="erro-mensagem">
+        <p>{{ erro() }}</p>
+        <button (click)="carregarTreino(treino()?.id!)" class="btn-retry">Tentar Novamente</button>
     </div>
 
+    <!-- Conteúdo do treino -->
+    <ng-container *ngIf="treino() as t">
+        <h1>{{ t.titulo }}</h1>
+        <span id="explicacao">Clique na imagem do exercício para obter uma descrição detalhada</span>
 
-    <div class="card" [class.expanded]="isCardExpanded(2)">
-        <div class="information">
-            <input type="checkbox" class="exercise-toggle" [checked]="isCardExpanded(2)"
-                (change)="toggleCard(2, $event)" aria-label="Expandir descrição do exercício"
-                style="background-image: url('/exercises/biceps_apoiado.avif');">
-            <h2>Nome do exercício</h2>
-            <img src="icones/reps.png" alt="Repetições" class="reps">
-            <p id="reps">10x</p>
-            <img src="icones/sets.png" alt="Séries" class="sets">
-            <p id="sets">10x</p>
-            <img src="icones/rest.png" alt="Descanso" class="rest">
-            <p id="rest">45s</p>
-            <input type="checkbox" name="ExerciseDone" class="ExerciseDone">
+        <!-- Cards dos exercícios -->
+        <div class="card" *ngFor="let item of t.itens; let i = index" [class.expanded]="isCardExpanded(i)">
+            <div class="information">
+                <input type="checkbox" class="exercise-toggle" [checked]="isCardExpanded(i)"
+                    (change)="toggleCard(i, $event)" aria-label="Expandir descrição do exercício"
+                    [style.background-image]="'url(' + obterImagemExercicio(item) + ')'">
+                <h2>{{ item.exercicio.nome }}</h2>
+                <img src="icones/reps.png" alt="Repetições" class="reps">
+                <p id="reps">{{ item.repeticoes }}x</p>
+                <img src="icones/sets.png" alt="Séries" class="sets">
+                <p id="sets">{{ item.series }}x</p>
+                <input type="checkbox" name="ExerciseDone" class="ExerciseDone">
+            </div>
+            <div class="description" [class.visible]="isCardExpanded(i)">
+                <h3>{{ item.exercicio.nome }}</h3>
+                <span>{{ item.exercicio.descricao }}</span>
+                <p class="musculo-alvo" *ngIf="item.exercicio.musculoAlvo">
+                    <strong>Músculo alvo:</strong> {{ item.exercicio.musculoAlvo }}
+                </p>
+                <p class="musculos-aux" *ngIf="item.exercicio.musculosAuxiliares">
+                    <strong>Músculos auxiliares:</strong> {{ item.exercicio.musculosAuxiliares }}
+                </p>
+            </div>
         </div>
-        <div class="description" [class.visible]="isCardExpanded(2)">
-            <h3>Descrição do exercício</h3>
-            <span>Lorem ipsum dolor sit amet consectetur adipisicing elit. Voluptas, doloremque. Doloribus, voluptate.
-                Voluptas, doloremque. Doloribus, voluptate. Voluptas, doloremque. Doloribus, voluptate. Voluptas,
-                doloremque. Doloribus, voluptate. Voluptas, doloremque. Doloribus,</span>
-        </div>
-    </div>
 
-    <div class="descricaocompleta">
-        <h3>Descrição do Treino</h3>
-        <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Ut qui doloribus quam dignissimos laborum!
-            Explicabo,
-            dolorem doloremque, labore beatae provident totam aperiam iure aliquam dignissimos recusandae excepturi
-            repudiandae doloribus quaerat?
-            Lorem ipsum dolor sit amet consectetur adipisicing elit. Ut qui doloribus quam dignissimos laborum!
-            Explicabo,
-            dolorem doloremque, labore beatae provident totam aperiam iure aliquam dignissimos recusandae excepturi
-            repudiandae doloribus quaerat?
-        </p>
-    </div>
-    <div class="dadostreino">
-        <p>Autor do treino: João Silva</p>
-        <p>Grupos musculares: Peito, Tríceps e Ombros</p>
-        <p>Recomendado para o gênero: Masculino</p>
-        <p>Objetivo: Hipertrofia, Ganho de Massa Muscular</p>
-        <p>Duração estimada: 60 minutos</p>
-    </div>
-    <button id="pdf" (click)="prepareAndMaybeSavePdf()">Salvar como PDF <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#000000"><path d="M360-460h40v-80h40q17 0 28.5-11.5T480-580v-40q0-17-11.5-28.5T440-660h-80v200Zm40-120v-40h40v40h-40Zm120 120h80q17 0 28.5-11.5T640-500v-120q0-17-11.5-28.5T600-660h-80v200Zm40-40v-120h40v120h-40Zm120 40h40v-80h40v-40h-40v-40h40v-40h-80v200ZM320-240q-33 0-56.5-23.5T240-320v-480q0-33 23.5-56.5T320-880h480q33 0 56.5 23.5T880-800v480q0 33-23.5 56.5T800-240H320Zm0-80h480v-480H320v480ZM160-80q-33 0-56.5-23.5T80-160v-560h80v560h560v80H160Zm160-720v480-480Z"/></svg></button>
+        <!-- Descrição do treino -->
+        <div class="descricaocompleta">
+            <h3>Descrição do Treino</h3>
+            <p>{{ t.descricao }}</p>
+        </div>
+
+        <!-- Dados do treino -->
+        <div class="dadostreino">
+            <p *ngIf="t.instrutor">Autor do treino: {{ t.instrutor.nome }}</p>
+            <p>Grupos musculares: {{ t.grupoMuscular }}</p>
+            <p>Total de exercícios: {{ t.itens?.length ?? 0 }}</p>
+        </div>
+
+        <button id="pdf" (click)="prepareAndMaybeSavePdf()">Salvar como PDF
+            <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#000000">
+                <path d="M360-460h40v-80h40q17 0 28.5-11.5T480-580v-40q0-17-11.5-28.5T440-660h-80v200Zm40-120v-40h40v40h-40Zm120 120h80q17 0 28.5-11.5T640-500v-120q0-17-11.5-28.5T600-660h-80v200Zm40-40v-120h40v120h-40Zm120 40h40v-80h40v-40h-40v-40h40v-40h-80v200ZM320-240q-33 0-56.5-23.5T240-320v-480q0-33 23.5-56.5T320-880h480q33 0 56.5 23.5T880-800v480q0 33-23.5 56.5T800-240H320Zm0-80h480v-480H320v480ZM160-80q-33 0-56.5-23.5T80-160v-560h80v560h560v80H160Zm160-720v480-480Z"/>
+            </svg>
+        </button>
+    </ng-container>
 
     <app-navigation></app-navigation>
 </div>
