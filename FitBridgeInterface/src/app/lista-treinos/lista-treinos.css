@@ -119,6 +119,30 @@ h1 {
   background-color: #f0f0f0;
 }
 
+.card-placeholder {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  background: linear-gradient(135deg, #8F3A33 0%, #E0332B 100%);
+  color: rgba(255, 255, 255, 0.85);
+  font-size: 13px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.card-placeholder svg {
+  opacity: 0.7;
+}
+
+.placeholder-ativo {
+  background: linear-gradient(135deg, #8F3A33 0%, #E0332B 100%);
+}
+
 .treino-imagem {
   width: 100%;
   height: 100%;
@@ -361,4 +385,87 @@ h1 {
 
 .treino-card {
   animation: fadeIn 300ms ease-in-out;
+}
+
+/* Estados de Carregamento e Erro */
+.carregando {
+  grid-column: 1 / -1;
+  text-align: center;
+  padding: 60px 20px;
+  color: #8F3A33;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.spinner {
+  width: 50px;
+  height: 50px;
+  border: 4px solid #E8D2B3;
+  border-top-color: #E0332B;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+  margin-bottom: 20px;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.carregando p {
+  font-size: 16px;
+  margin: 0;
+}
+
+.erro-mensagem {
+  grid-column: 1 / -1;
+  text-align: center;
+  padding: 60px 20px;
+  color: #E0332B;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.erro-mensagem svg {
+  opacity: 0.8;
+  margin-bottom: 20px;
+}
+
+.erro-mensagem h2 {
+  color: #E0332B;
+  font-size: 20px;
+  margin: 15px 0;
+}
+
+.erro-mensagem p {
+  color: #666666;
+  font-size: 14px;
+  margin: 10px 0 20px 0;
+}
+
+.btn-retry {
+  background-color: #E0332B;
+  color: white;
+  border: none;
+  padding: 10px 25px;
+  border-radius: 25px;
+  font-weight: bold;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 200ms ease-in-out;
+}
+
+.btn-retry:hover {
+  background-color: #8F3A33;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(224, 51, 43, 0.3);
+}
+
+.btn-retry:active {
+  transform: translateY(0);
 }

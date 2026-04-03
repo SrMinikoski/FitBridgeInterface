@@ -1,4 +1,5 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
+import { ActivatedRoute } from '@angular/router';
 import { Navigation } from '../navigation/navigation';
 
 @Component({
@@ -7,8 +8,40 @@ import { Navigation } from '../navigation/navigation';
   templateUrl: './workoutpage.html',
   styleUrl: './workoutpage.css',
 })
-export class Workoutpage {
+export class Workoutpage implements OnInit {
   expandedCards: boolean[] = [false, false, false];
+  treinoId: number | null = null;
+
+  constructor(private route: ActivatedRoute) {}
+
+  ngOnInit(): void {
+    // Captura o ID do treino da query parameter
+    this.route.queryParams.subscribe(params => {
+      if (params['id']) {
+        this.treinoId = parseInt(params['id'], 10);
+        console.log('Treino ID capturado:', this.treinoId);
+        // TODO: Carregar dados do treino específico com base no ID
+        this.carregarTreinoPorId(this.treinoId);
+      }
+    });
+  }
+
+  /**
+   * Carrega os dados do treino específico pela API
+   * TODO: Implementar chamada à API quando disponível
+   */
+  carregarTreinoPorId(id: number): void {
+    console.log('Carregando treino com ID:', id);
+    // Implementação futura para carregar dados reais do treino
+    // this.treinoService.obterTreinoPorId(id).subscribe(
+    //   (treino) => {
+    //     this.atualizarTreino(treino);
+    //   },
+    //   (error) => {
+    //     console.error('Erro ao carregar treino:', error);
+    //   }
+    // );
+  }
 
   toggleCard(index: number, event: Event): void {
     event.stopPropagation();

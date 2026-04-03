@@ -2,6 +2,21 @@
   <h1>Treinos Disponíveis</h1>
   <p class="subtitle">Escolha um treino para começar seu treino</p>
 
+  <!-- Mensagem de Carregamento -->
+  <div *ngIf="carregando()" class="carregando">
+    <div class="spinner"></div>
+    <p>Carregando treinos...</p>
+  </div>
+
+  <!-- Mensagem de Erro -->
+  <div *ngIf="erro()" class="erro-mensagem">
+    <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#E0332B">
+      <path d="m40-120 440-760 440 760H40Zm138-80h604L480-720 178-200Zm302-40q17 0 28.5-11.5T520-280q0-17-11.5-28.5T480-320q-17 0-28.5 11.5T440-280q0 17 11.5 28.5T480-240Zm-40-120h80v-200h-80v200Z" />
+    </svg>
+    <p>{{ erro() }}</p>
+    <button (click)="carregarTreinos()" class="btn-retry">Tentar Novamente</button>
+  </div>
+
   <!-- Barra de Pesquisa -->
   <div class="searchbar">
     <input 
@@ -20,22 +35,32 @@
   <!-- Grid de Treinos -->
   <div class="treinos-grid">
     <div 
-      *ngIf="treinosFiltrados.length > 0; else semResultados"
+      *ngIf="!carregando() && !erro() && treinosFiltrados().length > 0; else semResultados"
       class="grid-container"
     >
       <div 
-        *ngFor="let treino of treinosFiltrados" 
+        *ngFor="let treino of treinosFiltrados()" 
         class="treino-card"
         (click)="selecionarTreino(treino)"
+        role="button"
+        tabindex="0"
+        (keydown.enter)="selecionarTreino(treino)"
       >
         <!-- Imagem de Capa -->
         <div class="card-image">
           <img 
-            [src]="treino.imagemCapa" 
+            *ngIf="obterUrlImagem(treino) as imgUrl"
+            [src]="imgUrl" 
             [alt]="treino.titulo"
             class="treino-imagem"
-            onerror="this.src='/exercises/biceps_apoiado.avif'"
+            onerror="this.style.display='none'; this.parentElement.classList.add('placeholder-ativo')"
           >
+          <div *ngIf="!obterUrlImagem(treino)" class="card-placeholder">
+            <svg xmlns="http://www.w3.org/2000/svg" height="48px" viewBox="0 -960 960 960" width="48px" fill="currentColor">
+              <path d="M535-465 430-600 200-280h560L600-460l-65 80v-85ZM200-120q-33 0-56.5-23.5T120-200v-560q0-33 23.5-56.5T200-840h560q33 0 56.5 23.5T840-760v560q0 33-23.5 56.5T760-120H200Z"/>
+            </svg>
+            <span>{{ treino.grupoMuscular }}</span>
+          </div>
           <div class="card-overlay">
             <button class="btn-selecionar">Selecionar</button>
           </div>
@@ -53,32 +78,29 @@
               <svg class="info-icon" xmlns="http://www.w3.org/2000/svg" height="16px" viewBox="0 0 640 640" width="16px" fill="#E0332B">
                 <path d="M480 0C462.3 0 448 14.3 448 32C448 49.7 462.3 64 480 64L530.7 64L474 120.7C447.7 105 416.9 96 384 96C348.6 96 315.6 106.5 288 124.5C260.4 106.5 227.4 96 192 96C94.8 96 16 174.8 16 272C16 358.3 78.1 430.1 160 445.1L160 480L128 480C110.3 480 96 494.3 96 512C96 529.7 110.3 544 128 544L160 544L160 576C160 593.7 174.3 608 192 608C209.7 608 224 593.7 224 576L224 544L256 544C273.7 544 288 529.7 288 512C288 494.3 273.7 480 256 480L224 480L224 445.1C247.3 440.8 268.9 432 288 419.5C315.6 437.5 348.6 448 384 448C481.2 448 560 369.2 560 272C560 230.9 545.9 193 522.2 163L576 109.3L576 160C576 177.7 590.3 192 608 192C625.7 192 640 177.7 640 160L640 32C640 14.3 625.7 0 608 0L480 0zM336 373.2C356.2 344.6 368 309.7 368 272C368 234.3 356.2 199.4 336 170.8C350.6 163.9 366.8 160 384 160C445.9 160 496 210.1 496 272C496 333.9 445.9 384 384 384C366.8 384 350.5 380.1 336 373.2zM288 214.3C298.2 231.2 304 250.9 304 272C304 293.1 298.2 312.9 288 329.7C277.8 312.8 272 293.1 272 272C272 250.9 277.8 231.1 288 214.3zM240 170.8C219.8 199.4 208 234.3 208 272C208 309.7 219.8 344.6 240 373.2C225.5 380.1 209.2 384 192 384C130.1 384 80 333.9 80 272C80 210.1 130.1 160 192 160C209.2 160 225.5 163.9 240 170.8z" />
               </svg>
-              <span>{{ treino.generoRecomendado }}</span>
+              <span>{{ treino.instrutor?.nome }}</span>
             </div>
 
             <div class="info-item">
               <svg class="info-icon" xmlns="http://www.w3.org/2000/svg" height="16px" viewBox="0 -960 960 960" width="16px" fill="#E0332B">
                 <path d="M480-280q83 0 141.5-58.5T680-480q0-83-58.5-141.5T480-680q-83 0-141.5 58.5T280-480q0 83 58.5 141.5T480-280Zm0-60q-58 0-99-41t-41-99q0-58 41-99t99-41q58 0 99 41t41 99q0 58-41 99t-99 41ZM200-120q-33 0-56.5-23.5T120-200v-560q0-33 23.5-56.5T200-840h560q33 0 56.5 23.5T840-760v560q0 33-23.5 56.5T760-120H200Zm0-80h560v-560H200v560Zm0-560v560-560Z" />
               </svg>
-              <span>{{ treino.totalExercicios }} exercícios</span>
+              <span>{{ treino.itens?.length ?? 0 }} exercícios</span>
             </div>
           </div>
 
           <!-- Tags -->
           <div class="card-tags">
-            <span class="tag objetivo">{{ treino.objetivo }}</span>
-            <span class="tag musculos">{{ treino.gruposMusculares }}</span>
+            <span class="tag musculos">{{ treino.grupoMuscular }}</span>
           </div>
 
-          <!-- Data de Publicação -->
-          <p class="card-data">Publicado em {{ formatarData(treino.dataPublicacao) }}</p>
         </div>
       </div>
     </div>
 
     <!-- Mensagem quando não há resultados -->
     <ng-template #semResultados>
-      <div class="sem-resultados">
+      <div class="sem-resultados" *ngIf="!carregando() && !erro() && treinosCarregados()">
         <svg xmlns="http://www.w3.org/2000/svg" height="64px" viewBox="0 -960 960 960" width="64px" fill="#8F3A33">
           <path d="M784-120 532-372q-30 24-69 38t-83 14q-109 0-184.5-75.5T120-580q0-109 75.5-184.5T380-840q109 0 184.5 75.5T640-580q0 44-14 83t-38 69l252 252-56 56ZM380-400q75 0 127.5-52.5T560-580q0-75-52.5-127.5T380-760q-75 0-127.5 52.5T200-580q0 75 52.5 127.5T380-400Z" />
         </svg>
