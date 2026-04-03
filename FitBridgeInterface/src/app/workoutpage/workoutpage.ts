@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { ActivatedRoute } from '@angular/router';
 import { Navigation } from '../navigation/navigation';
 import { TreinoService, Treino, TreinoItem } from '../services/treino.service';
+import { FavoritosService } from '../services/favoritos.service';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 
@@ -17,13 +18,15 @@ export class Workoutpage implements OnInit, OnDestroy {
   treino = signal<Treino | null>(null);
   carregando = signal(true);
   erro = signal<string | null>(null);
+  favorito = signal(false);
   expandedCards: boolean[] = [];
 
   private destroy$ = new Subject<void>();
 
   constructor(
     private route: ActivatedRoute,
-    private treinoService: TreinoService
+    private treinoService: TreinoService,
+    private favoritosService: FavoritosService
   ) {}
 
   ngOnInit(): void {
@@ -50,6 +53,7 @@ export class Workoutpage implements OnInit, OnDestroy {
         next: (treino: Treino) => {
           this.treino.set(treino);
           this.expandedCards = (treino.itens || []).map(() => false);
+          this.favorito.set(this.favoritosService.isFavorito(treino.id));
           this.carregando.set(false);
         },
         error: (error) => {
@@ -65,6 +69,13 @@ export class Workoutpage implements OnInit, OnDestroy {
       return '/' + item.exercicio.diretorioImagem;
     }
     return '/exercises/biceps_apoiado.avif';
+  }
+
+  toggleFavorito(): void {
+    const t = this.treino();
+    if (!t) return;
+    const novoEstado = this.favoritosService.toggleFavorito(t.id);
+    this.favorito.set(novoEstado);
   }
 
   toggleCard(index: number, event: Event): void {

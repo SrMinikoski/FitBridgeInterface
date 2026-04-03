@@ -1,6 +1,15 @@
 <div class="content">
-  <h1>Treinos Disponíveis</h1>
-  <p class="subtitle">Escolha um treino para começar seu treino</p>
+  <h1>{{ filtroFavoritos() ? 'Treinos Favoritos' : 'Treinos Disponíveis' }}</h1>
+  <p class="subtitle">{{ filtroFavoritos() ? 'Seus treinos salvos como favoritos' : 'Escolha um treino para começar seu treino' }}</p>
+
+  <!-- Filtro de favoritos ativo -->
+  <div *ngIf="filtroFavoritos()" class="filtro-favoritos-banner">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512" width="16" height="16">
+      <path d="M287.9 0c9.2 0 17.6 5.2 21.6 13.5l68.6 141.3 153.2 22.6c9 1.3 16.5 7.6 19.3 16.3s.5 18.1-5.9 24.5L433.6 328.4l26.2 155.6c1.5 9-2.2 18.1-9.7 23.5s-17.3 6-25.3 1.7l-137-73.2L151 509.1c-8.1 4.3-17.9 3.7-25.3-1.7s-11.2-14.5-9.7-23.5l26.2-155.6L31.1 218.2c-6.5-6.4-8.7-15.9-5.9-24.5s10.3-14.9 19.3-16.3l153.2-22.6L266.3 13.5C270.4 5.2 278.7 0 287.9 0z" fill="#E0332B"/>
+    </svg>
+    <span>Filtrando por favoritos</span>
+    <button class="btn-limpar-filtro" (click)="limparFiltroFavoritos()">Mostrar todos</button>
+  </div>
 
   <!-- Mensagem de Carregamento -->
   <div *ngIf="carregando()" class="carregando">

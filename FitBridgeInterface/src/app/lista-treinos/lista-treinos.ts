@@ -1,9 +1,10 @@
 import { Component, OnInit, OnDestroy, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { Router } from '@angular/router';
+import { Router, ActivatedRoute } from '@angular/router';
 import { Navigation } from '../navigation/navigation';
 import { TreinoService, Treino } from '../services/treino.service';
+import { FavoritosService } from '../services/favoritos.service';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 
@@ -20,16 +21,27 @@ export class ListaTreinos implements OnInit, OnDestroy {
   treinosCarregados = signal(false);
   carregando = signal(false);
   erro = signal<string | null>(null);
+  filtroFavoritos = signal(false);
 
   private destroy$ = new Subject<void>();
   private treinosMockados: Treino[] = [];
 
   constructor(
     private router: Router,
-    private treinoService: TreinoService
+    private route: ActivatedRoute,
+    private treinoService: TreinoService,
+    private favoritosService: FavoritosService
   ) {}
 
   ngOnInit(): void {
+    this.route.queryParams
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(params => {
+        this.filtroFavoritos.set(params['favoritos'] === 'true');
+        if (this.treinosMockados.length) {
+          this.atualizarFiltro();
+        }
+      });
     this.carregarTreinos();
   }
 
@@ -67,16 +79,29 @@ export class ListaTreinos implements OnInit, OnDestroy {
    * Busca por título, descrição e grupos musculares
    */
   atualizarFiltro(): void {
-    if (!this.termoBusca.trim()) {
-      this.treinosFiltrados.set([...this.treinosMockados]);
-    } else {
+    let resultado = [...this.treinosMockados];
+
+    if (this.filtroFavoritos()) {
+      const favIds = this.favoritosService.obterFavoritosIds();
+      resultado = resultado.filter(t => favIds.includes(t.id));
+    }
+
+    if (this.termoBusca.trim()) {
       const termo = this.termoBusca.toLowerCase();
-      this.treinosFiltrados.set(this.treinosMockados.filter((treino) =>
+      resultado = resultado.filter((treino) =>
         treino.titulo.toLowerCase().includes(termo) ||
         treino.descricao.toLowerCase().includes(termo) ||
         (treino.grupoMuscular?.toLowerCase().includes(termo) ?? false)
-      ));
+      );
     }
+
+    this.treinosFiltrados.set(resultado);
+  }
+
+  limparFiltroFavoritos(): void {
+    this.filtroFavoritos.set(false);
+    this.router.navigate([], { queryParams: {} });
+    this.atualizarFiltro();
   }
 
   /**

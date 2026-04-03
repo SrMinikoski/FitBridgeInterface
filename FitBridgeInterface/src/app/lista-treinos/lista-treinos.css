@@ -469,3 +469,38 @@ h1 {
 .btn-retry:active {
   transform: translateY(0);
 }
+
+/* Favoritos filter banner */
+.filtro-favoritos-banner {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background-color: #FFF3E0;
+  border: 1px solid #E0332B;
+  border-radius: 50px;
+  padding: 8px 16px;
+  margin-bottom: 15px;
+  font-size: 14px;
+  color: #8F3A33;
+}
+
+.filtro-favoritos-banner svg {
+  flex-shrink: 0;
+}
+
+.btn-limpar-filtro {
+  background: none;
+  border: 1px solid #8F3A33;
+  color: #8F3A33;
+  border-radius: 50px;
+  padding: 4px 12px;
+  font-size: 12px;
+  cursor: pointer;
+  margin-left: 8px;
+  transition: background-color 200ms, color 200ms;
+}
+
+.btn-limpar-filtro:hover {
+  background-color: #8F3A33;
+  color: white;
+}
