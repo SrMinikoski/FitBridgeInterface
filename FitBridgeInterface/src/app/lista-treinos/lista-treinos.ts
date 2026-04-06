@@ -37,6 +37,11 @@ export class ListaTreinos implements OnInit, OnDestroy {
     this.route.queryParams
       .pipe(takeUntil(this.destroy$))
       .subscribe(params => {
+        // Verifica se há um parâmetro de busca vindo da página inicial
+        if (params['busca']) {
+          this.termoBusca = params['busca'];
+        }
+        
         this.filtroFavoritos.set(params['favoritos'] === 'true');
         if (this.treinosMockados.length) {
           this.atualizarFiltro();
