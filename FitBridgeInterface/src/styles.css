@@ -1,1 +1,19 @@
 /* You can add global styles to this file, and also import other style files */
+
+/* Background fixo em todas as páginas (exceto login) */
+body {
+  background-image: url('/bg.jpg');
+  background-attachment: fixed;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-color: #E8D2B3;
+  min-height: 100vh;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  margin: 0;
+  padding: 0;
+}

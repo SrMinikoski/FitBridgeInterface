@@ -6,7 +6,7 @@
 }
 
 .carousel {
-    width: 400px;
+    width: 600px;
     margin: 20px auto;
     border: solid 2px #8F3A33;
     border-radius: 20px;
@@ -19,7 +19,7 @@
 
 .carousel-inner img {
     width: 100%;
-    height: 250px;
+    height: 375px;
     object-fit: cover;
     display: block;
 }
@@ -80,8 +80,15 @@
 
 
 .content {
-    width: 600px;
-    margin: 0 auto;
+    background-color: #E8D2B3;
+    width: 50%;
+    padding: 15px;
+    border-radius: 20px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    margin: 10px auto 0;
     text-align: center;
 }
 
@@ -123,19 +130,6 @@ h1 {
     color: #8F3A33;
     margin: 5px auto;
     font-weight: 700;
-}
-
-.content {
-    background-color: #E8D2B3;
-    width: 50%;
-    padding: 15px;
-    border-radius: 20px;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    margin-top: 10px;
-
 }
 
 #proficon{

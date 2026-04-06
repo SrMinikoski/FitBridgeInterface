@@ -4,6 +4,7 @@
   align-items: center;
   min-height: 100vh;
   background: linear-gradient(135deg, #8F3A33 0%, #E0332B 100%);
+  background-attachment: scroll;
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
 }
 
