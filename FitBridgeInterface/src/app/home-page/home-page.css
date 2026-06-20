@@ -6,8 +6,8 @@
 }
 
 .carousel {
-    width: 600px;
-    margin: 20px auto;
+    width: 420px;
+    margin: 16px auto;
     border: solid 2px #8F3A33;
     border-radius: 20px;
 }
@@ -19,14 +19,14 @@
 
 .carousel-inner img {
     width: 100%;
-    height: 375px;
+    height: 262.5px;
     object-fit: cover;
     display: block;
 }
 
 .searchbar {
     width: 500px;
-    margin: 20px auto;
+    margin: 16px auto;
     position: relative;
     display: flex;
     align-items: center;
@@ -88,7 +88,7 @@
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    margin: 10px auto 0;
+    margin: 8px auto 0;
     text-align: center;
 }
 
@@ -97,7 +97,7 @@
     width: 600px;
     justify-content: center;
     align-items: center;
-    margin: 20px 0px auto;
+    margin: 12.8px 0px auto;
     flex-wrap: wrap;
     
 }
@@ -105,7 +105,7 @@
 .dash {
     width: 130px;
     height: 130px;
-    margin: 20px;
+    margin: 16px;
     background-color: #E0332B;
     border-radius: 20px;
     color: #FFCFCD;
@@ -128,7 +128,7 @@
 }
 h1 {
     color: #8F3A33;
-    margin: 5px auto;
+    margin: 4px auto;
     font-weight: 700;
 }
 

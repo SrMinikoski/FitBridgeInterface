@@ -74,6 +74,11 @@ h2 {
   box-shadow: 0 0 5px rgba(224, 51, 43, 0.3);
 }
 
+.form-input::placeholder {
+  color: #8F3A33;
+  opacity: 0.6;
+}
+
 .textarea {
   resize: vertical;
   min-height: 80px;
@@ -493,6 +498,37 @@ h2 {
   color: #8F3A33;
   font-size: 12px;
   font-weight: bold;
+}
+
+.image-mode-switch {
+  display: flex;
+  gap: 10px;
+  width: 100%;
+}
+
+.mode-btn {
+  flex: 1;
+  padding: 12px 15px;
+  border: 2px solid #8F3A33;
+  border-radius: 10px;
+  background-color: white;
+  color: #8F3A33;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 200ms ease-in-out;
+}
+
+.mode-btn:hover {
+  border-color: #E0332B;
+  background-color: rgba(224, 51, 43, 0.05);
+}
+
+.mode-btn.active {
+  background-color: #E0332B;
+  color: white;
+  border-color: #E0332B;
+  box-shadow: 0 2px 8px rgba(224, 51, 43, 0.3);
 }
 
 .workout-image-section {

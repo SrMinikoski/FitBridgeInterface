@@ -22,6 +22,8 @@ export class CadastroExercicio {
   nomeImagem: string = '';
   imagemPreview: string | null = null;
   arquivoImagem: File | null = null;
+  usarUrlImagem: boolean = false;
+  urlImagem: string = '';
   mensagem: Mensagem = {
     tipo: 'sucesso',
     texto: '',
@@ -49,57 +51,111 @@ export class CadastroExercicio {
     reader.readAsDataURL(file);
   }
 
+  onUrlChange(): void {
+    if (this.urlImagem.trim()) {
+      this.imagemPreview = this.urlImagem;
+      this.nomeImagem = '';
+    }
+  }
+
+  toggleImageMode(): void {
+    this.usarUrlImagem = !this.usarUrlImagem;
+    if (this.usarUrlImagem) {
+      // Modo URL
+      this.arquivoImagem = null;
+      this.nomeImagem = '';
+    } else {
+      // Modo upload
+      this.urlImagem = '';
+    }
+    this.imagemPreview = null;
+  }
+
   onSubmit(form: any): void {
     if (!form.valid) {
       this.exibirMensagem('erro', 'Preencha todos os campos.');
       return;
     }
 
-    if (!this.arquivoImagem) {
-      this.exibirMensagem('erro', 'Selecione uma imagem.');
-      return;
+    if (this.usarUrlImagem) {
+      // Modo URL: validar URL
+      if (!this.urlImagem.trim()) {
+        this.exibirMensagem('erro', 'Digite uma URL válida para a imagem.');
+        return;
+      }
+
+      // Cadastrar exercício diretamente com a URL
+      const dadosExercicio = {
+        nome: form.value.exerciseName,
+        descricao: form.value.description,
+        musculoAlvo: form.value.mainMuscle,
+        musculosAuxiliares: form.value.auxiliaryMuscles,
+        diretorioImagem: this.urlImagem,
+      };
+
+      console.log('Enviando dados do exercício com URL:', dadosExercicio);
+
+      this.http.post<any>(`${this.apiUrl}/exercicios`, dadosExercicio).subscribe({
+        next: () => {
+          this.exibirMensagem('sucesso', 'Exercício cadastrado com sucesso!');
+
+          setTimeout(() => {
+            this.limparFormulario();
+            form.resetForm();
+            this.cdr.detectChanges();
+          }, 2000);
+        },
+        error: (error) => {
+          console.error('Erro ao cadastrar exercício na API:', error);
+          this.exibirMensagem('erro', 'Erro ao cadastrar exercício na API.');
+        },
+      });
+    } else {
+      // Modo Upload Local: usar o código original
+      if (!this.arquivoImagem) {
+        this.exibirMensagem('erro', 'Selecione uma imagem.');
+        return;
+      }
+
+      const formData = new FormData();
+      formData.append('file', this.arquivoImagem);
+
+      this.http.post<any>('/api/upload-exercise-image', formData).subscribe({
+        next: (response) => {
+          console.log('Resposta do upload:', response);
+          const dadosExercicio = {
+            nome: form.value.exerciseName,
+            descricao: form.value.description,
+            musculoAlvo: form.value.mainMuscle,
+            musculosAuxiliares: form.value.auxiliaryMuscles,
+            diretorioImagem: response.filePath,
+          };
+
+          console.log('Enviando dados do exercício:', dadosExercicio);
+
+          this.http.post<any>(`${this.apiUrl}/exercicios`, dadosExercicio).subscribe({
+            next: () => {
+              this.exibirMensagem('sucesso', 'Exercício cadastrado com sucesso!');
+
+              setTimeout(() => {
+                this.limparFormulario();
+                form.resetForm();
+                this.cdr.detectChanges();
+              }, 2000);
+            },
+            error: (error) => {
+              console.error('Erro ao cadastrar exercício na API:', error);
+              console.error('Resposta do erro:', error.error);
+              this.exibirMensagem('erro', 'Imagem salva, mas erro ao cadastrar exercício na API.');
+            },
+          });
+        },
+        error: (error) => {
+          console.error('Erro ao enviar imagem:', error);
+          this.exibirMensagem('erro', 'Erro ao salvar imagem. Tente novamente.');
+        },
+      });
     }
-
-    // 1. Upload da imagem via Express SSR (mesma origem, rota local)
-    const formData = new FormData();
-    formData.append('file', this.arquivoImagem);
-
-    this.http.post<any>('/api/upload-exercise-image', formData).subscribe({
-      next: (response) => {
-        console.log('Resposta do upload:', response);
-        // 2. Cadastrar exercício na API Spring Boot com o caminho da imagem
-        const dadosExercicio = {
-          nome: form.value.exerciseName,
-          descricao: form.value.description,
-          musculoAlvo: form.value.mainMuscle,
-          musculosAuxiliares: form.value.auxiliaryMuscles,
-          diretorioImagem: response.filePath,
-        };
-        
-        console.log('Enviando dados do exercício:', dadosExercicio);
-
-        this.http.post<any>(`${this.apiUrl}/exercicios`, dadosExercicio).subscribe({
-          next: () => {
-            this.exibirMensagem('sucesso', 'Exercício cadastrado com sucesso!');
-
-            setTimeout(() => {
-              this.limparFormulario();
-              form.resetForm();
-              this.cdr.detectChanges();
-            }, 2000);
-          },
-          error: (error) => {
-            console.error('Erro ao cadastrar exercício na API:', error);
-            console.error('Resposta do erro:', error.error);
-            this.exibirMensagem('erro', 'Imagem salva, mas erro ao cadastrar exercício na API.');
-          },
-        });
-      },
-      error: (error) => {
-        console.error('Erro ao enviar imagem:', error);
-        this.exibirMensagem('erro', 'Erro ao salvar imagem. Tente novamente.');
-      },
-    });
   }
 
   exibirMensagem(tipo: 'sucesso' | 'erro', texto: string): void {
@@ -122,5 +178,7 @@ export class CadastroExercicio {
     this.nomeImagem = '';
     this.imagemPreview = null;
     this.arquivoImagem = null;
+    this.urlImagem = '';
+    this.usarUrlImagem = false;
   }
 }

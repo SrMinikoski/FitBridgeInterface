@@ -46,6 +46,16 @@ export class ListaExercicios implements OnInit {
     this.http.get<Exercicio[]>('https://fitbridge-exv.onrender.com/api/exercicios').subscribe({
       next: (dados) => {
         console.log('Dados recebidos:', dados);
+        
+        // Log de debug para as imagens
+        dados.forEach(ex => {
+          console.log(`Exercício: ${ex.nome}`, {
+            temImagem: this.temImagem(ex),
+            diretorioOriginal: ex.diretorioImagem,
+            urlProcessada: this.obterUrlImagem(ex),
+          });
+        });
+        
         this.exercicios = dados;
         this.carregando = false;
         this.cdr.markForCheck();
@@ -68,14 +78,34 @@ export class ListaExercicios implements OnInit {
   obterUrlImagem(exercicio: Exercicio): string {
     if (this.temImagem(exercicio)) {
       const path = exercicio.diretorioImagem!.trim();
-      // Se já começa com exercises/, usa direto
-      if (path.startsWith('exercises/')) {
-        return `/${path}`;
+      
+      // Se é uma URL completa (http:// ou https://), retorna direto
+      if (path.startsWith('http://') || path.startsWith('https://')) {
+        return path;
       }
-      // Se é apenas o nome do arquivo ou outro formato, assume exercises/
-      const filename = path.includes('/') ? path.split('/').pop()! : path;
-      return `/exercises/${filename}`;
+      
+      // Se já começa com / ou exercises/, usa direto
+      if (path.startsWith('/') || path.startsWith('exercises/')) {
+        return path.startsWith('/') ? path : `/${path}`;
+      }
+      
+      // Se é apenas o nome do arquivo, assume exercises/
+      if (!path.includes('/')) {
+        return `/exercises/${path}`;
+      }
+      
+      // Para outros formatos, tenta usar como está
+      return `/${path}`;
     }
     return '';
+  }
+
+  onImageError(event: Event, exercicio: Exercicio): void {
+    const img = event.target as HTMLImageElement;
+    console.warn(`Erro ao carregar imagem para: ${exercicio.nome}`, {
+      tentouCarregar: this.obterUrlImagem(exercicio),
+      diretorioOriginal: exercicio.diretorioImagem,
+    });
+    img.style.display = 'none';
   }
 }

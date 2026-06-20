@@ -41,7 +41,31 @@
         <fieldset class="form-section">
             <legend>Imagem do Exercício</legend>
 
+            <!-- Switch para escolher entre upload local e URL -->
             <div class="form-group">
+                <label>Tipo de Imagem:</label>
+                <div class="image-mode-switch">
+                    <button 
+                        type="button" 
+                        class="mode-btn" 
+                        [class.active]="!usarUrlImagem"
+                        (click)="toggleImageMode()"
+                    >
+                        📁 Upload Local
+                    </button>
+                    <button 
+                        type="button" 
+                        class="mode-btn" 
+                        [class.active]="usarUrlImagem"
+                        (click)="toggleImageMode()"
+                    >
+                        🔗 Link Web
+                    </button>
+                </div>
+            </div>
+
+            <!-- Upload Local -->
+            <div class="form-group" *ngIf="!usarUrlImagem">
                 <label for="exerciseImage">Selecionar imagem:</label>
                 <div class="file-input-wrapper">
                     <input type="file" id="exerciseImage" name="exerciseImage" accept="image/*" (change)="onImageSelect($event)" required>
@@ -51,8 +75,24 @@
                 <p class="file-info">Formatos aceitos: JPG, PNG, AVIF</p>
             </div>
 
+            <!-- URL Web -->
+            <div class="form-group" *ngIf="usarUrlImagem">
+                <label for="imageUrl">URL da Imagem:</label>
+                <input 
+                    type="url" 
+                    id="imageUrl" 
+                    name="imageUrl" 
+                    [(ngModel)]="urlImagem"
+                    (ngModelChange)="onUrlChange()"
+                    placeholder="https://exemplo.com/imagem.jpg" 
+                    required
+                    class="form-input"
+                >
+                <p class="file-info">Insira um link direto para a imagem (JPG, PNG, AVIF)</p>
+            </div>
+
             <div class="image-preview" id="imagePreview">
-                <img *ngIf="imagemPreview" [src]="imagemPreview" alt="Preview do exercício">
+                <img *ngIf="imagemPreview" [src]="imagemPreview" alt="Preview do exercício" (error)="imagemPreview = null">
                 <p class="preview-text" *ngIf="!imagemPreview">Imagem será exibida aqui</p>
             </div>
         </fieldset>

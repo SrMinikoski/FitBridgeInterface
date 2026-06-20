@@ -84,6 +84,8 @@ export class CadastroTreino implements OnInit {
   nomeImagem: string = '';
   imagemPreview: string | null = null;
   arquivoImagem: File | null = null;
+  usarUrlImagem: boolean = false;
+  urlImagem: string = '';
 
   // Exercícios carregados da API
   exerciciosDisponiveis: ApiExercicio[] = [];
@@ -114,6 +116,26 @@ export class CadastroTreino implements OnInit {
       });
     };
     reader.readAsDataURL(file);
+  }
+
+  onUrlChange(): void {
+    if (this.urlImagem.trim()) {
+      this.imagemPreview = this.urlImagem;
+      this.nomeImagem = '';
+    }
+  }
+
+  toggleImageMode(): void {
+    this.usarUrlImagem = !this.usarUrlImagem;
+    if (this.usarUrlImagem) {
+      // Modo URL
+      this.arquivoImagem = null;
+      this.nomeImagem = '';
+    } else {
+      // Modo upload
+      this.urlImagem = '';
+    }
+    this.imagemPreview = null;
   }
 
   @HostListener('document:click')
@@ -200,8 +222,13 @@ export class CadastroTreino implements OnInit {
       return;
     }
 
-    if (!this.arquivoImagem) {
+    if (!this.usarUrlImagem && !this.arquivoImagem) {
       this.exibirMensagem('erro', 'Selecione uma imagem para o treino.');
+      return;
+    }
+
+    if (this.usarUrlImagem && !this.urlImagem.trim()) {
+      this.exibirMensagem('erro', 'Insira uma URL válida para a imagem.');
       return;
     }
 
@@ -211,44 +238,57 @@ export class CadastroTreino implements OnInit {
       return;
     }
 
-    const formData = new FormData();
-    formData.append('file', this.arquivoImagem);
+    const salvarTreino = (caminhoImagem: string) => {
+      const treinoDTO = {
+        titulo: this.workout.title,
+        grupoMuscular: this.workout.targetMuscles,
+        descricao: this.workout.description,
+        diretorioImagem: caminhoImagem,
+        instrutorId: usuario.id,
+        itens: this.workout.exercises.map(ex => ({
+          exercicioId: ex.exercicioId,
+          series: ex.sets,
+          repeticoes: ex.reps,
+        })),
+      };
 
-    this.http.post<any>('/api/upload-workout-image', formData).subscribe({
-      next: (response) => {
-        const treinoDTO = {
-          titulo: this.workout.title,
-          grupoMuscular: this.workout.targetMuscles,
-          descricao: this.workout.description,
-          diretorioImagem: response.filePath,
-          instrutorId: usuario.id,
-          itens: this.workout.exercises.map(ex => ({
-            exercicioId: ex.exercicioId,
-            series: ex.sets,
-            repeticoes: ex.reps,
-          })),
-        };
+      console.log('Enviando dados do treino:', treinoDTO);
 
-        this.http.post<any>(`${this.apiUrl}/treinos`, treinoDTO).subscribe({
-          next: () => {
-            this.exibirMensagem('sucesso', 'Treino "' + this.workout.title + '" cadastrado com sucesso!');
+      this.http.post<any>(`${this.apiUrl}/treinos`, treinoDTO).subscribe({
+        next: () => {
+          this.exibirMensagem('sucesso', 'Treino "' + this.workout.title + '" cadastrado com sucesso!');
 
-            setTimeout(() => {
-              this.limparFormulario();
-              this.cdr.detectChanges();
-            }, 3500);
-          },
-          error: (error) => {
-            console.error('Erro ao cadastrar treino:', error);
-            this.exibirMensagem('erro', 'Imagem salva, mas erro ao cadastrar treino na API.');
-          },
-        });
-      },
-      error: (error) => {
-        console.error('Erro ao enviar imagem:', error);
-        this.exibirMensagem('erro', 'Erro ao salvar imagem. Tente novamente.');
-      },
-    });
+          setTimeout(() => {
+            this.limparFormulario();
+            this.cdr.detectChanges();
+          }, 3500);
+        },
+        error: (error) => {
+          console.error('Erro ao cadastrar treino:', error);
+          this.exibirMensagem('erro', 'Erro ao cadastrar treino na API.');
+        },
+      });
+    };
+
+    if (this.usarUrlImagem) {
+      // Modo URL: salvar treino diretamente com a URL
+      salvarTreino(this.urlImagem);
+    } else {
+      // Modo Upload: fazer upload e depois salvar treino
+      const formData = new FormData();
+      formData.append('file', this.arquivoImagem!);
+
+      this.http.post<any>('/api/upload-workout-image', formData).subscribe({
+        next: (response) => {
+          console.log('Resposta do upload:', response);
+          salvarTreino(response.filePath);
+        },
+        error: (error) => {
+          console.error('Erro ao enviar imagem:', error);
+          this.exibirMensagem('erro', 'Erro ao salvar imagem. Tente novamente.');
+        },
+      });
+    }
   }
 
   limparFormulario(): void {
@@ -267,6 +307,8 @@ export class CadastroTreino implements OnInit {
     this.nomeImagem = '';
     this.imagemPreview = null;
     this.arquivoImagem = null;
+    this.urlImagem = '';
+    this.usarUrlImagem = false;
   }
 
   exibirMensagem(tipo: 'sucesso' | 'erro', texto: string): void {

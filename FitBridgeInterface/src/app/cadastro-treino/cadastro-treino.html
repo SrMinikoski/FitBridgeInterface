@@ -142,7 +142,31 @@
   <div class="workout-image-section">
     <h2>Imagem do Treino</h2>
 
+    <!-- Switch para escolher entre upload local e URL -->
     <div class="form-group">
+      <label>Tipo de Imagem:</label>
+      <div class="image-mode-switch">
+        <button 
+          type="button" 
+          class="mode-btn" 
+          [class.active]="!usarUrlImagem"
+          (click)="toggleImageMode()"
+        >
+          📁 Upload Local
+        </button>
+        <button 
+          type="button" 
+          class="mode-btn" 
+          [class.active]="usarUrlImagem"
+          (click)="toggleImageMode()"
+        >
+          🔗 Link Web
+        </button>
+      </div>
+    </div>
+
+    <!-- Upload Local -->
+    <div class="form-group" *ngIf="!usarUrlImagem">
       <label for="workoutImage">Selecionar imagem:</label>
       <div class="file-input-wrapper">
         <input type="file" id="workoutImage" name="workoutImage" accept="image/*" (change)="onImageSelect($event)">
@@ -152,8 +176,23 @@
       <p class="file-info">Formatos aceitos: JPG, PNG, AVIF</p>
     </div>
 
+    <!-- URL Web -->
+    <div class="form-group" *ngIf="usarUrlImagem">
+      <label for="imageUrl">URL da Imagem:</label>
+      <input 
+        type="url" 
+        id="imageUrl" 
+        name="imageUrl" 
+        [(ngModel)]="urlImagem"
+        (ngModelChange)="onUrlChange()"
+        placeholder="https://exemplo.com/imagem.jpg" 
+        class="form-input"
+      >
+      <p class="file-info">Insira um link direto para a imagem (JPG, PNG, AVIF)</p>
+    </div>
+
     <div class="image-preview">
-      <img *ngIf="imagemPreview" [src]="imagemPreview" alt="Preview do treino">
+      <img *ngIf="imagemPreview" [src]="imagemPreview" alt="Preview do treino" (error)="imagemPreview = null">
       <p class="preview-text" *ngIf="!imagemPreview">Imagem será exibida aqui</p>
     </div>
   </div>

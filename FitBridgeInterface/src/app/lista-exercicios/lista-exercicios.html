@@ -23,6 +23,7 @@
           [src]="obterUrlImagem(exercicio)"
           [alt]="exercicio.nome"
           class="card-image"
+          (error)="onImageError($event, exercicio)"
         />
         <div *ngIf="!temImagem(exercicio)" class="card-image-placeholder">
           <p class="registro-antigo">Registro antigo</p>
