@@ -16,7 +16,25 @@
     <ng-container *ngIf="treino() as t">
         <h1>{{ t.titulo }}</h1>
 
-        <!-- Botão favoritar -->
+        <!-- Imagem de Capa do Treino -->
+        <div class="treino-capa-container">
+          <img 
+            *ngIf="obterImagemCapaTreino() as imgUrl"
+            [src]="imgUrl" 
+            [alt]="t.titulo"
+            class="treino-capa-imagem"
+            onerror="this.style.display='none'; this.parentElement.classList.add('sem-imagem')"
+          >
+          <div *ngIf="!obterImagemCapaTreino()" class="treino-capa-placeholder">
+            <svg xmlns="http://www.w3.org/2000/svg" height="48px" viewBox="0 -960 960 960" width="48px" fill="currentColor">
+              <path d="M535-465 430-600 200-280h560L600-460l-65 80v-85ZM200-120q-33 0-56.5-23.5T120-200v-560q0-33 23.5-56.5T200-840h560q33 0 56.5 23.5T840-760v560q0 33-23.5 56.5T760-120H200Z"/>
+            </svg>
+            <span>{{ t.grupoMuscular }}</span>
+          </div>
+        </div>
+
+        <!-- Botões de Ação -->
+        <div class="acoes-treino">
         <button class="btn-favorito" (click)="toggleFavorito()" [class.favoritado]="favorito()"
             [title]="favorito() ? 'Remover dos favoritos' : 'Adicionar aos favoritos'">
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512" width="28" height="28">
@@ -26,6 +44,18 @@
                     fill="#E0332B"/>
             </svg>
         </button>
+
+        <!-- Botão deletar (apenas para instrutores) -->
+        <button 
+          *ngIf="podeEditarTreino()" 
+          class="btn-deletar-workout" 
+          title="Excluir treino" 
+          (click)="deletarTreino()">
+            <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="currentColor">
+                <path d="M280-120q-33 0-56.5-23.5T200-200v-520h-40v-80h120v-40h440v40h120v80h-40v520q0 33-23.5 56.5T680-120H280Zm400-600H280v520h400v-520ZM360-280h80v-360h-80v360Zm160 0h80v-360h-80v360Z"/>
+            </svg>
+        </button>
+        </div>
 
         <span id="explicacao">Clique na imagem do exercício para obter uma descrição detalhada</span>
 
@@ -55,7 +85,7 @@
         </div>
 
         <!-- Descrição do treino -->
-        <div class="descricaocompleta">
+        <div class="descricaocompleta" *ngIf="t.descricao">
             <h3>Descrição do Treino</h3>
             <p>{{ t.descricao }}</p>
         </div>
@@ -63,7 +93,7 @@
         <!-- Dados do treino -->
         <div class="dadostreino">
             <p *ngIf="t.instrutor">Autor do treino: {{ t.instrutor.nome }}</p>
-            <p>Grupos musculares: {{ t.grupoMuscular }}</p>
+            <p *ngIf="t.grupoMuscular">Grupos musculares: {{ t.grupoMuscular }}</p>
             <p>Total de exercícios: {{ t.itens?.length ?? 0 }}</p>
         </div>
 

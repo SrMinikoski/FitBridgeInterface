@@ -120,6 +120,9 @@ h1 {
 }
 
 .card-placeholder {
+  position: absolute;
+  top: 0;
+  left: 0;
   width: 100%;
   height: 100%;
   display: flex;
@@ -127,20 +130,29 @@ h1 {
   align-items: center;
   justify-content: center;
   gap: 8px;
-  background: linear-gradient(135deg, #8F3A33 0%, #E0332B 100%);
   color: rgba(255, 255, 255, 0.85);
   font-size: 13px;
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.5px;
+  opacity: 0;
+  transition: opacity 300ms ease-in-out;
+  pointer-events: none;
+  z-index: 2;
+}
+
+.card-placeholder.ativo,
+.card-image.placeholder-ativo .card-placeholder {
+  opacity: 1;
+  pointer-events: auto;
 }
 
 .card-placeholder svg {
   opacity: 0.7;
 }
 
-.placeholder-ativo {
-  background: linear-gradient(135deg, #8F3A33 0%, #E0332B 100%);
+.placeholder-ativo .card-placeholder {
+  opacity: 1;
 }
 
 .treino-imagem {
@@ -193,6 +205,47 @@ h1 {
 
 .btn-selecionar:active {
   transform: scale(0.95);
+}
+
+.btn-deletar {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background-color: rgba(224, 51, 43, 0.9);
+  color: white;
+  border: none;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 200ms ease-in-out;
+  opacity: 0;
+  transform: scale(0.8);
+  padding: 0;
+  z-index: 10;
+}
+
+.treino-card:hover .btn-deletar {
+  opacity: 1;
+  transform: scale(1);
+}
+
+.btn-deletar:hover {
+  background-color: #E0332B;
+  transform: scale(1.1);
+  box-shadow: 0 4px 12px rgba(224, 51, 43, 0.4);
+}
+
+.btn-deletar:active {
+  transform: scale(0.95);
+}
+
+.btn-deletar svg {
+  width: 20px;
+  height: 20px;
 }
 
 /* Conteúdo do Card */

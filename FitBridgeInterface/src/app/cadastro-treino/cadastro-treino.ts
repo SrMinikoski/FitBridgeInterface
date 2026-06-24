@@ -89,6 +89,8 @@ export class CadastroTreino implements OnInit {
 
   // Exercícios carregados da API
   exerciciosDisponiveis: ApiExercicio[] = [];
+  exerciciosFiltrados: ApiExercicio[] = [];
+  buscaExercicio: string = '';
 
   constructor(
     private cdr: ChangeDetectorRef,
@@ -145,11 +147,37 @@ export class CadastroTreino implements OnInit {
 
   toggleDropdown(): void {
     this.dropdownAberto = !this.dropdownAberto;
+    if (this.dropdownAberto) {
+      this.buscaExercicio = '';
+      this.exerciciosFiltrados = [...this.exerciciosDisponiveis];
+      setTimeout(() => {
+        const input = document.querySelector<HTMLInputElement>('.dropdown-search-input');
+        input?.focus();
+      }, 50);
+    }
   }
 
   selecionarExercicio(ex: ApiExercicio): void {
     this.exercicioSelecionado = ex;
     this.dropdownAberto = false;
+    this.buscaExercicio = '';
+    this.exerciciosFiltrados = [...this.exerciciosDisponiveis];
+  }
+
+  private normalizar(texto: string): string {
+    return texto.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+  }
+
+  filtrarExercicios(): void {
+    const termo = this.normalizar(this.buscaExercicio.trim());
+    if (!termo) {
+      this.exerciciosFiltrados = [...this.exerciciosDisponiveis];
+      return;
+    }
+    this.exerciciosFiltrados = this.exerciciosDisponiveis.filter(ex =>
+      this.normalizar(ex.nome).includes(termo) ||
+      this.normalizar(ex.musculoAlvo).includes(termo)
+    );
   }
 
   getImagemUrl(diretorio: string): string {
@@ -167,6 +195,7 @@ export class CadastroTreino implements OnInit {
     this.http.get<ApiExercicio[]>(`${this.apiUrl}/exercicios`).subscribe({
       next: (exercicios) => {
         this.exerciciosDisponiveis = exercicios;
+        this.exerciciosFiltrados = [...exercicios];
       },
       error: (err) => {
         console.error('Erro ao carregar exercícios:', err);
@@ -265,7 +294,11 @@ export class CadastroTreino implements OnInit {
         },
         error: (error) => {
           console.error('Erro ao cadastrar treino:', error);
-          this.exibirMensagem('erro', 'Erro ao cadastrar treino na API.');
+          const mensagemApi = error?.error?.message || error?.error?.erro || error?.error?.error;
+          const mensagemFinal = mensagemApi
+            ? `Erro: ${mensagemApi}`
+            : `Erro ao cadastrar treino (código ${error?.status ?? 'desconhecido'}).`;
+          this.exibirMensagem('erro', mensagemFinal);
         },
       });
     };
@@ -285,7 +318,11 @@ export class CadastroTreino implements OnInit {
         },
         error: (error) => {
           console.error('Erro ao enviar imagem:', error);
-          this.exibirMensagem('erro', 'Erro ao salvar imagem. Tente novamente.');
+          const mensagemApi = error?.error?.message || error?.error?.erro || error?.error?.error;
+          const mensagemFinal = mensagemApi
+            ? `Erro ao salvar imagem: ${mensagemApi}`
+            : `Erro ao salvar imagem (código ${error?.status ?? 'desconhecido'}).`;
+          this.exibirMensagem('erro', mensagemFinal);
         },
       });
     }

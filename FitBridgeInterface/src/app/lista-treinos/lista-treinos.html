@@ -62,9 +62,13 @@
             [src]="imgUrl" 
             [alt]="treino.titulo"
             class="treino-imagem"
-            onerror="this.style.display='none'; this.parentElement.classList.add('placeholder-ativo')"
+            (error)="onImageError($event)"
           >
-          <div *ngIf="!obterUrlImagem(treino)" class="card-placeholder">
+          <div 
+            class="card-placeholder" 
+            [class.ativo]="!obterUrlImagem(treino)"
+            [style.background]="'linear-gradient(135deg, ' + obterCorGrupoMuscular(treino.grupoMuscular) + ' 0%, #E0332B 100%)'"
+          >
             <svg xmlns="http://www.w3.org/2000/svg" height="48px" viewBox="0 -960 960 960" width="48px" fill="currentColor">
               <path d="M535-465 430-600 200-280h560L600-460l-65 80v-85ZM200-120q-33 0-56.5-23.5T120-200v-560q0-33 23.5-56.5T200-840h560q33 0 56.5 23.5T840-760v560q0 33-23.5 56.5T760-120H200Z"/>
             </svg>
@@ -72,6 +76,11 @@
           </div>
           <div class="card-overlay">
             <button class="btn-selecionar">Selecionar</button>
+            <button class="btn-deletar" title="Excluir treino" (click)="deletarTreino(treino, $event)">
+              <svg xmlns="http://www.w3.org/2000/svg" height="20px" viewBox="0 -960 960 960" width="20px" fill="currentColor">
+                <path d="M280-120q-33 0-56.5-23.5T200-200v-520h-40v-80h120v-40h440v40h120v80h-40v520q0 33-23.5 56.5T680-120H280Zm400-600H280v520h400v-520ZM360-280h80v-360h-80v360Zm160 0h80v-360h-80v360Z"/>
+              </svg>
+            </button>
           </div>
         </div>
 

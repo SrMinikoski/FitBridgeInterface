@@ -66,4 +66,11 @@ export class TreinoService {
   buscarTreinos(termo: string): Observable<Treino[]> {
     return this.http.get<Treino[]>(`${this.apiUrl}/treinos/busca/${termo}`);
   }
+
+  /**
+   * Deleta um treino específico por ID
+   */
+  deletarTreino(id: number): Observable<void> {
+    return this.http.delete<void>(`${this.apiUrl}/treinos/${id}`);
+  }
 }

@@ -1,9 +1,10 @@
 import { Component, OnInit, OnDestroy, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { Navigation } from '../navigation/navigation';
 import { TreinoService, Treino, TreinoItem } from '../services/treino.service';
 import { FavoritosService } from '../services/favoritos.service';
+import { AuthService } from '../services/auth.service';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 
@@ -20,14 +21,21 @@ export class Workoutpage implements OnInit, OnDestroy {
   erro = signal<string | null>(null);
   favorito = signal(false);
   expandedCards: boolean[] = [];
+  podeEditarTreino = signal(false);
 
   private destroy$ = new Subject<void>();
 
   constructor(
     private route: ActivatedRoute,
+    private router: Router,
     private treinoService: TreinoService,
-    private favoritosService: FavoritosService
-  ) {}
+    private favoritosService: FavoritosService,
+    private authService: AuthService
+  ) {
+    // Verifica se o usuário é instrutor
+    const usuario = this.authService.getUsuarioLogado();
+    this.podeEditarTreino.set(usuario?.tipo === 'INSTRUTOR');
+  }
 
   ngOnInit(): void {
     this.route.queryParams
@@ -64,11 +72,68 @@ export class Workoutpage implements OnInit, OnDestroy {
       });
   }
 
+  /**
+   * Normaliza URLs de imagem
+   * Se for URL absoluta (http/https), retorna como está
+   * Se for relativa, adiciona barra no início
+   */
+  private normalizarUrlImagem(url: string | undefined | null): string | null {
+    if (!url) return null;
+    
+    console.log('>>> NORMALIZANDO URL (workoutpage) <<<', url);
+    
+    // PRIMEIRO: Verifica se já começa com protocolo (http/https)
+    if (url.startsWith('http://') || url.startsWith('https://')) {
+      console.log('✓ JÁ ABSOLUTA:', url);
+      return url;
+    }
+    
+    // DEPOIS: Se começa com barra, remove e verifica novamente
+    if (url.startsWith('/')) {
+      const urlSemBarra = url.substring(1);
+      console.log('Verificando após remover barra:', urlSemBarra);
+      if (urlSemBarra.startsWith('http://') || urlSemBarra.startsWith('https://')) {
+        console.log('✓ ERA /https:// AGORA CORRIGIDA:', urlSemBarra);
+        return urlSemBarra;
+      }
+    }
+    
+    // Se for relativa, adiciona barra
+    const urlFinal = '/' + url;
+    console.log('✓ RELATIVA - ADICIONANDO BARRA:', urlFinal);
+    return urlFinal;
+  }
+
   obterImagemExercicio(item: TreinoItem): string {
     if (item.exercicio?.diretorioImagem) {
-      return '/' + item.exercicio.diretorioImagem;
+      return this.normalizarUrlImagem(item.exercicio.diretorioImagem) || '/exercises/biceps_apoiado.avif';
     }
     return '/exercises/biceps_apoiado.avif';
+  }
+
+  /**
+   * Obtém a URL da imagem de capa do treino
+   */
+  obterImagemCapaTreino(): string | null {
+    const t = this.treino();
+    if (!t) return null;
+
+    // 1. Imagem do próprio treino
+    if (t.diretorioImagem) {
+      return this.normalizarUrlImagem(t.diretorioImagem);
+    }
+
+    // 2. Imagem do primeiro exercício que tenha uma
+    if (t.itens?.length) {
+      for (const item of t.itens) {
+        if (item.exercicio?.diretorioImagem) {
+          return this.normalizarUrlImagem(item.exercicio.diretorioImagem);
+        }
+      }
+    }
+
+    // 3. Sem imagem disponível
+    return null;
   }
 
   toggleFavorito(): void {
@@ -154,5 +219,29 @@ export class Workoutpage implements OnInit, OnDestroy {
         reject(err);
       }
     });
+  }
+
+  /**
+   * Deleta o treino atual após confirmação do usuário
+   */
+  deletarTreino(): void {
+    const t = this.treino();
+    if (!t) return;
+    
+    const confirmacao = confirm(`Tem certeza que deseja excluir o treino "${t.titulo}"? Esta ação não pode ser desfeita.`);
+    
+    if (confirmacao) {
+      this.treinoService.deletarTreino(t.id)
+        .pipe(takeUntil(this.destroy$))
+        .subscribe({
+          next: () => {
+            this.router.navigate(['/treinos']);
+          },
+          error: (error) => {
+            console.error('Erro ao deletar treino:', error);
+            alert('Erro ao excluir o treino. Tente novamente.');
+          }
+        });
+    }
   }
 }
