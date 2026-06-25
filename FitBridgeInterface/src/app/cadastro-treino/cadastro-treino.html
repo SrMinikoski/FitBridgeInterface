@@ -1,5 +1,5 @@
 <div class="content">
-  <h1>Cadastro de Treino</h1>
+  <h1>{{ editId ? 'Editar Treino' : 'Cadastro de Treino' }}</h1>
 
   <div class="form-container">
     <h2>Adicionar Exercício ao Treino</h2>
@@ -229,7 +229,7 @@
         placeholder="Ex: Peito, Tríceps, Ombros" />
     </div>
 
-    <button (click)="saveWorkout()" class="save-btn">Salvar Treino</button>
+    <button (click)="saveWorkout()" class="save-btn">{{ editId ? 'Atualizar Treino' : 'Salvar Treino' }}</button>
   </div>
 
   <a routerLink="/home" class="btn-home" title="Voltar à página inicial">

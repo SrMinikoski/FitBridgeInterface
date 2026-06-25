@@ -64,13 +64,17 @@
             <div class="information">
                 <input type="checkbox" class="exercise-toggle" [checked]="isCardExpanded(i)"
                     (change)="toggleCard(i, $event)" aria-label="Expandir descrição do exercício"
-                    [style.background-image]="'url(' + obterImagemExercicio(item) + ')'">
+                    [style.background-image]="'url(' + obterImagemExercicio(item) + ')'"> 
                 <h2>{{ item.exercicio.nome }}</h2>
-                <img src="icones/reps.png" alt="Repetições" class="reps">
-                <p id="reps">{{ item.repeticoes }}x</p>
-                <img src="icones/sets.png" alt="Séries" class="sets">
-                <p id="sets">{{ item.series }}x</p>
-                <input type="checkbox" name="ExerciseDone" class="ExerciseDone">
+                <div class="exercise-stats">
+                    <img src="icones/reps.png" alt="Repetições" class="reps">
+                    <p class="stat-value">{{ item.repeticoes }}x</p>
+                    <img src="icones/sets.png" alt="Séries" class="sets">
+                    <p class="stat-value">{{ item.series }}x</p>
+                    <img src="icones/rest.png" alt="Descanso" class="rest">
+                    <p class="stat-value">60s</p>
+                    <input type="checkbox" name="ExerciseDone" class="ExerciseDone">
+                </div>
             </div>
             <div class="description" [class.visible]="isCardExpanded(i)">
                 <h3>{{ item.exercicio.nome }}</h3>

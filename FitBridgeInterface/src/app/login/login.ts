@@ -17,6 +17,7 @@ export class Login implements OnInit {
   carregando: boolean = false;
   erro: string = '';
   erroVisivel: boolean = false;
+  senhaVisivel: boolean = false;
 
   constructor(
     private authService: AuthService,

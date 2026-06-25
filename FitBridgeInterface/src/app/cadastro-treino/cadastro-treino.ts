@@ -1,7 +1,7 @@
 import { Component, ChangeDetectorRef, NgZone, OnInit, HostListener } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { RouterLink } from '@angular/router';
+import { RouterLink, ActivatedRoute, Router } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
 import { AuthService } from '../services/auth.service';
 
@@ -92,15 +92,27 @@ export class CadastroTreino implements OnInit {
   exerciciosFiltrados: ApiExercicio[] = [];
   buscaExercicio: string = '';
 
+  // Modo edição
+  editId: number | null = null;
+
   constructor(
     private cdr: ChangeDetectorRef,
     private ngZone: NgZone,
     private http: HttpClient,
-    private authService: AuthService
+    private authService: AuthService,
+    private route: ActivatedRoute,
+    private router: Router
   ) {}
 
   ngOnInit(): void {
     this.carregarExercicios();
+    this.route.queryParams.subscribe(params => {
+      const editId = params['editId'];
+      if (editId) {
+        this.editId = +editId;
+        this.carregarTreinoPorId(this.editId);
+      }
+    });
   }
 
   onImageSelect(event: Event): void {
@@ -189,6 +201,42 @@ export class CadastroTreino implements OnInit {
   onImageError(event: Event): void {
     const img = event.target as HTMLImageElement;
     img.style.display = 'none';
+  }
+
+  carregarTreinoPorId(id: number): void {
+    this.http.get<any>(`${this.apiUrl}/treinos/${id}`).subscribe({
+      next: (treino) => {
+        this.workout.title = treino.titulo;
+        this.workout.description = treino.descricao;
+        this.workout.targetMuscles = treino.grupoMuscular;
+
+        if (treino.diretorioImagem) {
+          this.usarUrlImagem = true;
+          this.urlImagem = treino.diretorioImagem;
+          this.imagemPreview = this.getImagemUrl(treino.diretorioImagem);
+        }
+
+        if (treino.itens?.length) {
+          this.workout.exercises = treino.itens.map((item: any, index: number) => ({
+            id: index + 1,
+            exercicioId: item.exercicio.id,
+            name: item.exercicio.nome,
+            reps: item.repeticoes,
+            sets: item.series,
+            rest: 60,
+            image: this.getImagemUrl(item.exercicio.diretorioImagem || ''),
+            description: item.exercicio.descricao,
+          }));
+          this.expandedCards = this.workout.exercises.map(() => false);
+        }
+
+        this.cdr.detectChanges();
+      },
+      error: (err) => {
+        console.error('Erro ao carregar treino para edição:', err);
+        this.exibirMensagem('erro', 'Erro ao carregar dados do treino.');
+      },
+    });
   }
 
   carregarExercicios(): void {
@@ -283,24 +331,48 @@ export class CadastroTreino implements OnInit {
 
       console.log('Enviando dados do treino:', treinoDTO);
 
-      this.http.post<any>(`${this.apiUrl}/treinos`, treinoDTO).subscribe({
-        next: () => {
-          this.exibirMensagem('sucesso', 'Treino "' + this.workout.title + '" cadastrado com sucesso!');
+      const handleErroSalvar = (error: any) => {
+        console.error('Erro ao salvar treino:', error);
+        const mensagemApi = error?.error?.message || error?.error?.erro || error?.error?.error;
+        const mensagemFinal = mensagemApi
+          ? `Erro: ${mensagemApi}`
+          : `Erro ao salvar treino (código ${error?.status ?? 'desconhecido'}).`;
+        this.exibirMensagem('erro', mensagemFinal);
+      };
 
-          setTimeout(() => {
-            this.limparFormulario();
-            this.cdr.detectChanges();
-          }, 3500);
-        },
-        error: (error) => {
-          console.error('Erro ao cadastrar treino:', error);
-          const mensagemApi = error?.error?.message || error?.error?.erro || error?.error?.error;
-          const mensagemFinal = mensagemApi
-            ? `Erro: ${mensagemApi}`
-            : `Erro ao cadastrar treino (código ${error?.status ?? 'desconhecido'}).`;
-          this.exibirMensagem('erro', mensagemFinal);
-        },
-      });
+      const criarTreino = () => {
+        this.http.post<any>(`${this.apiUrl}/treinos`, treinoDTO).subscribe({
+          next: () => {
+            const msg = this.editId
+              ? `Treino "${this.workout.title}" atualizado com sucesso!`
+              : `Treino "${this.workout.title}" cadastrado com sucesso!`;
+            this.exibirMensagem('sucesso', msg);
+            setTimeout(() => {
+              if (this.editId) {
+                this.router.navigate(['/treinos']);
+              } else {
+                this.limparFormulario();
+              }
+              this.cdr.detectChanges();
+            }, 3500);
+          },
+          error: handleErroSalvar,
+        });
+      };
+
+      if (this.editId) {
+        // A API não suporta PUT/PATCH em /treinos/:id (apenas GET e DELETE).
+        // Workaround: deletar o treino antigo e criar um novo com os dados atualizados.
+        this.http.delete<void>(`${this.apiUrl}/treinos/${this.editId}`).subscribe({
+          next: () => criarTreino(),
+          error: (error) => {
+            console.error('Erro ao remover treino antigo:', error);
+            this.exibirMensagem('erro', 'Erro ao atualizar o treino. Tente novamente.');
+          },
+        });
+      } else {
+        criarTreino();
+      }
     };
 
     if (this.usarUrlImagem) {

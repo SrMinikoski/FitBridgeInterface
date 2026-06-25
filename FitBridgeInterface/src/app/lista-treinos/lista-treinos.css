@@ -85,6 +85,7 @@ h1 {
   gap: 25px;
   width: 100%;
   max-width: 1400px;
+  align-items: stretch;
 }
 
 /* Card do Treino */
@@ -228,6 +229,47 @@ h1 {
   z-index: 10;
 }
 
+.btn-editar {
+  position: absolute;
+  top: 10px;
+  right: 60px;
+  background-color: rgba(143, 58, 51, 0.9);
+  color: white;
+  border: none;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 200ms ease-in-out;
+  opacity: 0;
+  transform: scale(0.8);
+  padding: 0;
+  z-index: 10;
+}
+
+.treino-card:hover .btn-editar {
+  opacity: 1;
+  transform: scale(1);
+}
+
+.btn-editar:hover {
+  background-color: #8F3A33;
+  transform: scale(1.1);
+  box-shadow: 0 4px 12px rgba(143, 58, 51, 0.4);
+}
+
+.btn-editar:active {
+  transform: scale(0.95);
+}
+
+.btn-editar svg {
+  width: 20px;
+  height: 20px;
+}
+
 .treino-card:hover .btn-deletar {
   opacity: 1;
   transform: scale(1);
@@ -251,10 +293,12 @@ h1 {
 /* Conteúdo do Card */
 .card-content {
   padding: 18px;
-  flex-grow: 1;
+  flex: 1;
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 10px;
+  min-height: 160px;
+  overflow: hidden;
 }
 
 .treino-titulo {
@@ -264,6 +308,11 @@ h1 {
   margin: 0;
   line-height: 1.3;
   text-align: left;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  word-break: break-word;
 }
 
 .treino-descricao {
@@ -273,9 +322,11 @@ h1 {
   margin: 0;
   text-align: left;
   display: -webkit-box;
-  /* -webkit-line-clamp: 2; */
+  -webkit-line-clamp: 3;
   -webkit-box-orient: vertical;
   overflow: hidden;
+  word-break: break-word;
+  flex-shrink: 0;
 }
 
 /* Informações do Card */
@@ -302,17 +353,23 @@ h1 {
 .card-tags {
   display: flex;
   flex-wrap: wrap;
-  gap: 8px;
-  margin: 10px 0;
+  gap: 6px;
+  margin-top: auto;
+  overflow: hidden;
+  max-height: 58px;
 }
 
 .tag {
   display: inline-block;
-  padding: 5px 10px;
+  padding: 4px 10px;
   border-radius: 15px;
   font-size: 11px;
   font-weight: bold;
-  white-space: nowrap;
+  white-space: normal;
+  word-break: break-word;
+  overflow-wrap: break-word;
+  max-width: 100%;
+  line-height: 1.4;
 }
 
 .tag.objetivo {

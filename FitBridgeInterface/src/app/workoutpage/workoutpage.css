@@ -33,18 +33,19 @@
     height: 80px;
     overflow: hidden;
     display: flex;
-    margin: 10px;
     flex-direction: row;
     border-radius: 50px;
     position: relative;
     align-items: center;
-    justify-content: space-around;
+    justify-content: flex-start;
+    gap: 6px;
+    padding: 0 12px 0 10px;
     cursor: pointer;
     transition: background-color 200ms ease-in-out;
 }
 
 .information * {
-    margin: 8px;
+    margin: 0;
 }
 
 .exercise {
@@ -97,10 +98,32 @@
 
 .information h2 {
     font-size: 12px;
+    flex: 1;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    text-align: left;
+    padding-left: 4px;
 }
 
 .information p {
     margin-left: -5px;
+}
+
+.exercise-stats {
+    display: flex;
+    align-items: center;
+    flex-shrink: 0;
+    gap: 6px;
+    margin-left: auto;
+    padding-right: 4px;
+}
+
+.stat-value {
+    font-size: 12px;
+    min-width: 26px;
+    text-align: left;
+    color: #333;
 }
 
 input:not(.exercise-toggle) {

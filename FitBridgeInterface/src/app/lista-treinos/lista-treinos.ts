@@ -5,6 +5,7 @@ import { Router, ActivatedRoute } from '@angular/router';
 import { Navigation } from '../navigation/navigation';
 import { TreinoService, Treino } from '../services/treino.service';
 import { FavoritosService } from '../services/favoritos.service';
+import { AuthService } from '../services/auth.service';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { inject } from '@angular/core';
@@ -31,7 +32,8 @@ export class ListaTreinos implements OnInit, OnDestroy {
     private router: Router,
     private route: ActivatedRoute,
     private treinoService: TreinoService,
-    private favoritosService: FavoritosService
+    private favoritosService: FavoritosService,
+    private authService: AuthService
   ) {}
 
   ngOnInit(): void {
@@ -230,6 +232,22 @@ export class ListaTreinos implements OnInit, OnDestroy {
     }
     
     return '#8F3A33';
+  }
+
+  /**
+   * Verifica se o usuário logado é instrutor
+   */
+  isInstrutor(): boolean {
+    const usuario = this.authService.getUsuarioLogado();
+    return usuario?.tipo === 'INSTRUTOR';
+  }
+
+  /**
+   * Navega para a tela de edição do treino
+   */
+  editarTreino(treino: Treino, event: Event): void {
+    event.stopPropagation();
+    this.router.navigate(['/cadastro-treino'], { queryParams: { editId: treino.id } });
   }
 
   /**
