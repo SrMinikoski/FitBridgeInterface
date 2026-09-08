@@ -2,3 +2,8 @@
   base = "FitBridgeInterface"
   command = "npm run build"
   publish = "dist/FitBridgeInterface/browser"
+
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
