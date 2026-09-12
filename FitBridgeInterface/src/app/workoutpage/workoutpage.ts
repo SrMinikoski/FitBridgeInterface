@@ -202,6 +202,13 @@ export class Workoutpage implements OnInit, OnDestroy {
       clone.querySelectorAll(selector).forEach(el => el.remove());
     });
 
+    // Reaplica modo CORS nas imagens externas (mesmo request que o html2canvas fará ao capturar)
+    clone.querySelectorAll('img').forEach(img => {
+      if (img.src.startsWith('http')) {
+        img.crossOrigin = 'anonymous';
+      }
+    });
+
     // Garante que todas as descrições de exercício estejam expandidas e visíveis
     const cards = Array.from(clone.querySelectorAll('.card'));
     cards.forEach((card, index) => {
@@ -213,6 +220,7 @@ export class Workoutpage implements OnInit, OnDestroy {
       const item = treino?.itens?.[index];
       if (toggle && item) {
         const img = document.createElement('img');
+        img.crossOrigin = 'anonymous';
         img.src = this.obterImagemExercicio(item);
         img.className = 'exercise-toggle';
         img.alt = item.exercicio?.nome || 'Exercício';
@@ -254,7 +262,16 @@ export class Workoutpage implements OnInit, OnDestroy {
     await this.aguardarImagens(clone);
 
     try {
-      await (window as any).html2pdf().set(opt).from(clone).save();
+      // Timeout de segurança: imagens externas bloqueadas/lentas (ex: hotlink protection)
+      // podem travar o html2canvas indefinidamente durante o carregamento interno via CORS
+      await this.comTimeout(
+        (window as any).html2pdf().set(opt).from(clone).save(),
+        30000,
+        'Tempo esgotado ao gerar o PDF. Verifique sua conexão e tente novamente.'
+      );
+    } catch (err) {
+      alert(err instanceof Error ? err.message : 'Erro ao gerar o PDF.');
+      throw err;
     } finally {
       document.body.removeChild(wrapper);
       document.body.removeChild(overlay);
@@ -262,13 +279,25 @@ export class Workoutpage implements OnInit, OnDestroy {
     }
   }
 
+  private comTimeout<T>(promise: Promise<T>, ms: number, mensagemErro: string): Promise<T> {
+    return new Promise<T>((resolve, reject) => {
+      const timer = setTimeout(() => reject(new Error(mensagemErro)), ms);
+      promise.then(
+        value => { clearTimeout(timer); resolve(value); },
+        err => { clearTimeout(timer); reject(err); }
+      );
+    });
+  }
+
   private aguardarImagens(container: HTMLElement): Promise<void> {
     const imagens = Array.from(container.querySelectorAll('img'));
     const promessas = imagens.map(img => {
       if (img.complete) return Promise.resolve();
+      // Evita travar a geração do PDF caso uma imagem externa (ex: hotlink protection) nunca responda
       return new Promise<void>(resolve => {
-        img.addEventListener('load', () => resolve());
-        img.addEventListener('error', () => resolve());
+        const timer = setTimeout(() => resolve(), 6000);
+        img.addEventListener('load', () => { clearTimeout(timer); resolve(); });
+        img.addEventListener('error', () => { clearTimeout(timer); resolve(); });
       });
     });
     return Promise.all(promessas).then(() => undefined);
