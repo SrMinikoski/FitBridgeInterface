@@ -153,21 +153,12 @@ export class Workoutpage implements OnInit, OnDestroy {
   }
 
   prepareAndMaybeSavePdf(): void {
-    const previousState = [...this.expandedCards];
-    this.expandedCards = this.expandedCards.map(() => true);
-
-    setTimeout(() => {
-      const wantsToSave = window.confirm('Versão para impressão gerada. Deseja salvar o treino em seu dispositivo?');
-      if (wantsToSave) {
-        this.downloadPdf().then(() => {
-          this.expandedCards = previousState;
-        }).catch(() => {
-          this.expandedCards = previousState;
-        });
-      } else {
-        this.expandedCards = previousState;
-      }
-    }, 500);
+    const wantsToSave = window.confirm('Deseja salvar o treino em formato PDF em seu dispositivo?');
+    if (wantsToSave) {
+      this.downloadPdf().catch(err => {
+        console.error('Erro ao gerar PDF:', err);
+      });
+    }
   }
 
   async downloadPdf(): Promise<void> {
@@ -177,8 +168,8 @@ export class Workoutpage implements OnInit, OnDestroy {
       return;
     }
 
-    const element = document.querySelector('.content') as HTMLElement;
-    if (!element) {
+    const sourceElement = document.querySelector('.content') as HTMLElement;
+    if (!sourceElement) {
       alert('Conteúdo não encontrado para geração do PDF.');
       return;
     }
@@ -186,39 +177,101 @@ export class Workoutpage implements OnInit, OnDestroy {
     const treino = this.treino();
     const filename = treino ? treino.titulo.replace(/[^a-zA-Z0-9]/g, '_') + '.pdf' : 'treino.pdf';
 
-    const opt = {
-      margin: 10,
-      filename,
-      image: { type: 'jpeg', quality: 0.98 },
-      html2canvas: { scale: 2, useCORS: true },
-      jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
-    };
+    // Overlay opaco: evita que o usuário veja o layout fixo sendo montado fora do viewport atual
+    const overlay = document.createElement('div');
+    overlay.style.cssText = 'position:fixed;inset:0;background:#E8D2B3;display:flex;align-items:center;justify-content:center;z-index:100000;font-size:18px;color:#8F3A33;font-weight:bold;';
+    overlay.textContent = 'Gerando PDF...';
+    document.body.appendChild(overlay);
 
-    const pdfBtn = document.getElementById('pdf') as HTMLElement | null;
-    const prevPdfDisplay = pdfBtn ? pdfBtn.style.display : null;
-    if (pdfBtn) pdfBtn.style.display = 'none';
+    // Clone com largura fixa de 750px, renderizado on-screen (position:fixed) para evitar
+    // que o html2canvas gere um canvas em branco, o que ocorre com posicionamento negativo/off-screen.
+    const clone = sourceElement.cloneNode(true) as HTMLElement;
+    clone.classList.add('pdf-export-mode');
 
-    const inputs = Array.from(element.querySelectorAll('input')) as HTMLElement[];
-    const prevDisplays = inputs.map(i => i.style.display || '');
-    inputs.forEach(i => i.style.display = 'none');
+    const selectorsToRemove = [
+      '#pdf',
+      '.acoes-treino',
+      'app-navigation',
+      '#explicacao',
+      '.carregando',
+      '.erro-mensagem',
+      '.btn-deletar-workout',
+      '.ExerciseDone'
+    ];
+    selectorsToRemove.forEach(selector => {
+      clone.querySelectorAll(selector).forEach(el => el.remove());
+    });
 
-    return new Promise((resolve, reject) => {
-      try {
-        (window as any).html2pdf().set(opt).from(element).save().then(() => {
-          if (pdfBtn) pdfBtn.style.display = prevPdfDisplay || '';
-          inputs.forEach((i, idx) => i.style.display = prevDisplays[idx] || '');
-          resolve();
-        }).catch((err: any) => {
-          if (pdfBtn) pdfBtn.style.display = prevPdfDisplay || '';
-          inputs.forEach((i, idx) => i.style.display = prevDisplays[idx] || '');
-          reject(err);
-        });
-      } catch (err) {
-        if (pdfBtn) pdfBtn.style.display = prevPdfDisplay || '';
-        inputs.forEach((i, idx) => i.style.display = prevDisplays[idx] || '');
-        reject(err);
+    // Garante que todas as descrições de exercício estejam expandidas e visíveis
+    const cards = Array.from(clone.querySelectorAll('.card'));
+    cards.forEach((card, index) => {
+      card.classList.add('expanded');
+      card.querySelector('.description')?.classList.add('visible');
+
+      // html2canvas não renderiza corretamente o background-image de <input>; troca por <img>
+      const toggle = card.querySelector('.exercise-toggle') as HTMLElement | null;
+      const item = treino?.itens?.[index];
+      if (toggle && item) {
+        const img = document.createElement('img');
+        img.src = this.obterImagemExercicio(item);
+        img.className = 'exercise-toggle';
+        img.alt = item.exercicio?.nome || 'Exercício';
+        // Estilo inline como reforço: garante o tamanho mesmo se o html2canvas ignorar a classe CSS
+        img.style.cssText = 'width:36px;height:36px;min-width:36px;min-height:36px;max-width:36px;max-height:36px;flex-shrink:0;object-fit:cover;border-radius:10px;display:block;';
+        toggle.replaceWith(img);
       }
     });
+
+    const wrapper = document.createElement('div');
+    wrapper.style.cssText = 'position:fixed;top:0;left:0;width:600px;z-index:99999;';
+    wrapper.appendChild(clone);
+    document.body.appendChild(wrapper);
+
+    // Remove o clipping horizontal do body para o clone não ser cortado em telas estreitas
+    const prevBodyOverflow = document.body.style.overflow;
+    document.body.style.overflow = 'visible';
+
+    const opt = {
+      // Sem margem vertical (evita corte de imagens entre páginas); mantém apenas a lateral
+      margin: [0, 14, 0, 14],
+      filename,
+      image: { type: 'jpeg', quality: 0.98 },
+      html2canvas: {
+        scale: 2,
+        useCORS: true,
+        scrollX: 0,
+        scrollY: 0,
+        width: 600,
+        windowWidth: 600,
+        logging: false
+      },
+      jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' },
+      // 'avoid-all' forçava toda a árvore a evitar quebras, gerando espaços em branco enormes;
+      // 'css' respeita apenas os elementos com page-break-inside/break-inside: avoid definidos
+      pagebreak: { mode: ['css', 'legacy'] }
+    };
+
+    await this.aguardarImagens(clone);
+
+    try {
+      await (window as any).html2pdf().set(opt).from(clone).save();
+    } finally {
+      document.body.removeChild(wrapper);
+      document.body.removeChild(overlay);
+      document.body.style.overflow = prevBodyOverflow;
+    }
+  }
+
+  private aguardarImagens(container: HTMLElement): Promise<void> {
+    const imagens = Array.from(container.querySelectorAll('img'));
+    const promessas = imagens.map(img => {
+      if (img.complete) return Promise.resolve();
+      return new Promise<void>(resolve => {
+        img.addEventListener('load', () => resolve());
+        img.addEventListener('error', () => resolve());
+      });
+    });
+    return Promise.all(promessas).then(() => undefined);
   }
 
   /**

@@ -89,3 +89,38 @@
     transform: scale(1.2) !important;
 }
 
+@media (max-width: 600px) {
+    .navegation {
+        width: min(100%, 360px);
+        height: auto;
+        min-height: 55px;
+        margin: 16px auto 8px;
+        padding: 6px;
+    }
+
+    .navegation ul {
+        width: 100%;
+        gap: 8px;
+        margin: 4px;
+        flex-wrap: wrap;
+    }
+
+    .navegation ul li {
+        flex: 0 0 35px;
+    }
+
+    .navegation ul li.user-info {
+        flex: 1 1 100%;
+        justify-content: center;
+        margin: 2px 0;
+        padding: 0;
+        order: -1;
+    }
+
+    .user-name {
+        font-size: 13px;
+        max-width: 100%;
+        overflow-wrap: anywhere;
+    }
+}
+

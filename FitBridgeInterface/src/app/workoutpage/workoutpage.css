@@ -65,6 +65,7 @@
     -moz-appearance: none;
     width: 80px;
     height: 80px;
+    flex-shrink: 0;
     border: none;
     border-radius: 20px;
     padding: 0;
@@ -99,6 +100,7 @@
 .information h2 {
     font-size: 12px;
     flex: 1;
+    min-width: 0;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
@@ -217,6 +219,180 @@ input:not(.exercise-toggle):checked {
     * { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
     .description { max-height: none !important; opacity: 1 !important; padding: 15px 10px !important; margin: 0 10px 10px 10px !important; }
     .exercise-toggle { box-shadow: none; }
+}
+
+/* Estilos padronizados para exportação em PDF (largura fixa independente da tela) */
+.pdf-export-mode {
+    width: 600px !important;
+    max-width: 600px !important;
+    padding: 25px !important;
+    margin: 0 !important;
+    background-color: #E8D2B3 !important;
+    border-radius: 0 !important;
+    box-sizing: border-box !important;
+    font-family: Arial, Helvetica, sans-serif !important;
+    text-align: center !important;
+}
+
+.pdf-export-mode h1 {
+    font-size: 28px !important;
+    margin: 10px 0 15px 0 !important;
+    color: #E0332B !important;
+    font-weight: 700 !important;
+}
+
+.pdf-export-mode .treino-capa-container {
+    width: 100% !important;
+    max-width: 100% !important;
+    height: 220px !important;
+    margin: 15px auto !important;
+    border-radius: 15px !important;
+    overflow: hidden !important;
+    page-break-inside: avoid !important;
+    break-inside: avoid !important;
+}
+
+.pdf-export-mode .treino-capa-imagem {
+    width: 100% !important;
+    height: 100% !important;
+    object-fit: cover !important;
+}
+
+.pdf-export-mode .card {
+    width: 100% !important;
+    margin: 12px 0 !important;
+    border-radius: 15px !important;
+    background-color: rgba(255, 255, 255, 0.2) !important;
+    padding: 8px !important;
+    box-sizing: border-box !important;
+    page-break-inside: avoid !important;
+    break-inside: avoid !important;
+}
+
+.pdf-export-mode .information {
+    width: 100% !important;
+    height: auto !important;
+    min-height: 44px !important;
+    display: flex !important;
+    flex-direction: row !important;
+    align-items: center !important;
+    justify-content: flex-start !important;
+    gap: 12px !important;
+    padding: 6px 12px !important;
+    border-radius: 12px !important;
+    page-break-inside: avoid !important;
+    break-inside: avoid !important;
+    opacity: 1 !important;
+    filter: none !important;
+    background-color: transparent !important;
+}
+
+.pdf-export-mode .information::after {
+    display: none !important;
+}
+
+.pdf-export-mode .exercise-toggle {
+    width: 36px !important;
+    height: 36px !important;
+    border-radius: 10px !important;
+    object-fit: cover !important;
+    flex-shrink: 0 !important;
+}
+
+.pdf-export-mode .information h2 {
+    font-size: 16px !important;
+    flex: 1 !important;
+    white-space: normal !important;
+    text-align: left !important;
+    color: #8F3A33 !important;
+    margin: 0 !important;
+    font-weight: bold !important;
+}
+
+.pdf-export-mode .exercise-stats {
+    display: flex !important;
+    align-items: center !important;
+    gap: 8px !important;
+    margin-left: auto !important;
+    flex-shrink: 0 !important;
+}
+
+.pdf-export-mode .reps,
+.pdf-export-mode .sets,
+.pdf-export-mode .rest {
+    width: 18px !important;
+    height: 18px !important;
+    padding: 6px !important;
+    background-color: #E0332B !important;
+    border-radius: 50% !important;
+}
+
+.pdf-export-mode .stat-value {
+    font-size: 13px !important;
+    color: #333 !important;
+    min-width: 24px !important;
+    margin: 0 !important;
+}
+
+.pdf-export-mode .description {
+    max-height: none !important;
+    opacity: 1 !important;
+    padding: 12px 15px !important;
+    margin: 8px 0 0 0 !important;
+    display: block !important;
+    background-color: #ffffffc2 !important;
+    border-radius: 10px !important;
+    text-align: left !important;
+}
+
+.pdf-export-mode .description h3 {
+    font-size: 16px !important;
+    color: #8F3A33 !important;
+    margin: 0 0 6px 0 !important;
+}
+
+.pdf-export-mode .description span {
+    font-size: 13px !important;
+    color: #333 !important;
+    display: block !important;
+}
+
+.pdf-export-mode .musculo-alvo,
+.pdf-export-mode .musculos-aux {
+    font-size: 12px !important;
+    color: #555 !important;
+    margin-top: 6px !important;
+}
+
+.pdf-export-mode .descricaocompleta,
+.pdf-export-mode .dadostreino {
+    width: 100% !important;
+    padding: 15px 20px !important;
+    margin-top: 15px !important;
+    background-color: #F9EFE1 !important;
+    border-radius: 15px !important;
+    box-sizing: border-box !important;
+    text-align: left !important;
+    page-break-inside: avoid !important;
+    break-inside: avoid !important;
+}
+
+.pdf-export-mode .descricaocompleta h3 {
+    margin-top: 0 !important;
+    color: #8F3A33 !important;
+    font-size: 16px !important;
+}
+
+.pdf-export-mode .dadostreino p {
+    margin: 5px 0 !important;
+    background-color: #ffffff !important;
+    padding: 6px 10px !important;
+    border-radius: 8px !important;
+    font-size: 13px !important;
+}
+
+.pdf-export-mode .dadostreino p:nth-child(even) {
+    background-color: transparent !important;
 }
 
 .description h3 {
@@ -421,6 +597,89 @@ h2 {
   transform: scale(0.95);
 }
 
+@media (max-width: 600px) {
+    .content {
+        width: calc(100% - 24px);
+        padding: 16px 10px;
+        margin: 12px auto;
+    }
+
+    h1 {
+        font-size: clamp(26px, 8vw, 32px);
+        line-height: 1.15;
+        overflow-wrap: anywhere;
+    }
+
+    .card {
+        width: 100%;
+    }
+
+    .information {
+        min-height: 92px;
+        height: auto;
+        display: grid;
+        grid-template-columns: 60px minmax(0, 1fr);
+        gap: 8px;
+        padding: 8px;
+        border-radius: 18px;
+    }
+
+    .exercise,
+    .exercise-toggle {
+        width: 60px;
+        height: 60px;
+    }
+
+    .information h2 {
+        min-width: 0;
+        padding-right: 4px;
+        white-space: normal;
+        overflow-wrap: anywhere;
+        line-height: 1.2;
+    }
+
+    .exercise-stats {
+        grid-column: 2;
+        gap: 3px;
+        min-width: 0;
+        flex-wrap: wrap;
+        margin-left: 0;
+    }
+
+    .reps,
+    .sets,
+    .rest {
+        width: 16px;
+        height: 16px;
+        padding: 6px;
+    }
+
+    .stat-value {
+        min-width: 20px;
+        font-size: 11px;
+    }
+
+    .treino-capa-container {
+        max-width: 100%;
+        height: min(55vw, 240px);
+    }
+
+    .descricaocompleta,
+    .dadostreino {
+        width: 100%;
+        padding: 14px;
+    }
+
+    #explicacao {
+        line-height: 1.4;
+    }
+
+    #pdf {
+        width: 100%;
+        min-height: 48px;
+    }
+}
+
 /* Favorito star button */
 .btn-favorito {
   background: none;
@@ -473,4 +732,15 @@ h2 {
 
 .btn-deletar-workout:active {
   transform: scale(0.95);
+}
+
+/* Evita que o container fique estreito demais e esprema as miniaturas dos exercícios */
+@media (max-width: 950px) and (min-width: 601px) {
+    .content {
+        width: min(92%, 650px);
+    }
+
+    .exercise-stats {
+        gap: 4px;
+    }
 }

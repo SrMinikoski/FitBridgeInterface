@@ -171,6 +171,23 @@
   }
 }
 
+@media (max-width: 600px) {
+  .content {
+    width: calc(100% - 24px);
+    padding: 16px 12px;
+    margin: 12px auto;
+  }
+
+  .exercicios-grid {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 16px;
+  }
+
+  .card-image-container {
+    height: clamp(180px, 55vw, 240px);
+  }
+}
+
 @media (max-width: 480px) {
   .content {
     width: 100%;
