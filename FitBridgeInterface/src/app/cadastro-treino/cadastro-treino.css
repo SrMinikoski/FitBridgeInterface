@@ -947,3 +947,89 @@ h2 {
     transform: translateY(30px) scale(0.92);
   }
 }
+
+@media (max-width: 600px) {
+  .content {
+    width: calc(100% - 24px);
+    padding: 16px 10px;
+    margin: 12px auto;
+  }
+
+  h1 {
+    font-size: clamp(26px, 8vw, 32px);
+    line-height: 1.15;
+  }
+
+  .form-container,
+  .exercises-list,
+  .workout-image-section,
+  .workout-details {
+    width: 100%;
+    padding: 16px 12px;
+  }
+
+  .information,
+  .information.edit-mode {
+    height: auto;
+    min-height: 92px;
+    grid-template-columns: 64px minmax(0, 1fr);
+    gap: 8px;
+    padding: 8px;
+    border-radius: 18px;
+  }
+
+  .exercise-image,
+  .exercise-toggle {
+    width: 60px;
+    height: 60px;
+  }
+
+  .exercise-stats,
+  .edit-stats {
+    grid-column: 2;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    min-width: 0;
+    width: 100%;
+    gap: 4px;
+  }
+
+  .exercise-actions {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    min-width: 0;
+  }
+
+  .exercise-name {
+    padding-right: 56px;
+    min-height: 38px;
+  }
+
+  .description.visible {
+    margin: 0 4px 8px;
+    padding: 12px 10px;
+  }
+
+  .image-mode-switch {
+    flex-direction: column;
+  }
+
+  .mode-btn,
+  .add-btn,
+  .save-btn {
+    width: 100%;
+    min-height: 48px;
+  }
+
+  .image-preview {
+    height: min(55vw, 220px);
+  }
+
+  .toast-popup {
+    left: 12px;
+    right: 12px;
+    bottom: 12px;
+    min-width: 0;
+    max-width: none;
+  }
+}

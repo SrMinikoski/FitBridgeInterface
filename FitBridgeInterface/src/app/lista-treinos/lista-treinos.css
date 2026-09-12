@@ -446,6 +446,55 @@ h1 {
   }
 }
 
+@media (max-width: 600px) {
+  .content {
+    width: calc(100% - 24px);
+    padding: 16px 12px;
+    margin: 12px auto;
+  }
+
+  h1 {
+    font-size: clamp(26px, 8vw, 32px);
+    line-height: 1.15;
+  }
+
+  .grid-container {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 16px;
+  }
+
+  .card-image {
+    height: clamp(160px, 48vw, 220px);
+  }
+
+  .card-info {
+    flex-wrap: wrap;
+    gap: 8px 15px;
+  }
+
+  .card-overlay,
+  .treino-card:hover .card-overlay {
+    background-color: transparent;
+    align-items: flex-end;
+    justify-content: flex-start;
+    padding: 10px;
+  }
+
+  .btn-selecionar,
+  .treino-card:hover .btn-selecionar,
+  .btn-editar,
+  .treino-card:hover .btn-editar,
+  .btn-deletar,
+  .treino-card:hover .btn-deletar {
+    opacity: 1;
+    transform: none;
+  }
+
+  .btn-selecionar {
+    margin-right: auto;
+  }
+}
+
 @media (max-width: 480px) {
   .content {
     width: 100%;

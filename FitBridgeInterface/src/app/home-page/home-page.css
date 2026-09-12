@@ -6,7 +6,8 @@
 }
 
 .carousel {
-    width: 420px;
+    width: 100%;
+    max-width: 420px;
     margin: 16px auto;
     border: solid 2px #8F3A33;
     border-radius: 20px;
@@ -47,7 +48,8 @@
 }
 
 .searchbar {
-    width: 500px;
+    width: 100%;
+    max-width: 500px;
     margin: 16px auto;
     position: relative;
     display: flex;
@@ -57,6 +59,7 @@
 
 .search-input {
     flex: 1;
+    min-width: 0;
     padding: 10px 15px;
     border-radius: 20px 0 0 20px;
     border: solid 2px #8F3A33;
@@ -83,6 +86,7 @@
     justify-content: center;
     transition: background-color 0.2s;
     font-size: 14px;
+    flex-shrink: 0;
 }
 
 .search-btn:hover:not(:disabled) {
@@ -103,7 +107,7 @@
 
 .content {
     background-color: #E8D2B3;
-    width: 50%;
+    width: min(90%, 650px);
     padding: 15px;
     border-radius: 20px;
     display: flex;
@@ -116,18 +120,18 @@
 
 .dashboard {
     display: flex;
-    width: 600px;
+    width: 100%;
+    max-width: 600px;
     justify-content: center;
     align-items: center;
     margin: 12.8px 0px auto;
     flex-wrap: wrap;
-    
 }
 
 .dash {
     width: 130px;
     height: 130px;
-    margin: 16px;
+    margin: 12px;
     background-color: #E0332B;
     border-radius: 20px;
     color: #FFCFCD;
@@ -157,5 +161,73 @@ h1 {
 #proficon{
     width: 40px;
     fill: #8F3A33;
-    
+}
+
+@media (max-width: 950px) {
+    .content {
+        width: min(92%, 620px);
+        padding: 16px 12px;
+    }
+
+    .dashboard {
+        width: 100%;
+    }
+
+    .dash {
+        width: min(130px, 40vw);
+        margin: 8px;
+    }
+}
+
+@media (max-width: 768px) {
+    .content {
+        width: min(100% - 24px, 560px);
+        padding: 16px 12px;
+        margin-top: 12px;
+    }
+
+    .content h1 {
+        font-size: clamp(24px, 8vw, 34px);
+        line-height: 1.15;
+    }
+
+    .searchbar {
+        width: 100%;
+        margin: 12px auto 20px;
+    }
+
+    .carousel {
+        width: 100%;
+        max-width: 420px;
+        margin: 12px auto;
+    }
+
+    .carousel-inner {
+        height: auto;
+        aspect-ratio: 16 / 10;
+    }
+
+    .dashboard {
+        width: 100%;
+        gap: 10px;
+        margin: 8px 0 12px;
+    }
+
+    .dash {
+        width: min(42vw, 150px);
+        height: 120px;
+        margin: 4px;
+        padding: 10px;
+    }
+
+    .dash h2 {
+        font-size: 15px;
+        line-height: 1.2;
+        overflow-wrap: anywhere;
+    }
+
+    .dash p {
+        font-size: 13px;
+        overflow-wrap: anywhere;
+    }
 }
